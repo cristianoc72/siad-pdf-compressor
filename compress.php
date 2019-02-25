@@ -4,6 +4,8 @@ require 'vendor/autoload.php';
 
 $logger = new \Monolog\Logger('Siad pdf compressor');
 $logger->pushHandler(new \Monolog\Handler\StreamHandler(__DIR__ . '/pdf-compressor.log'));
+$dotenv = new \Symfony\Component\Dotenv\Dotenv();
+$dotenv->load(__DIR__.'/.env');
 
 $finder = new \Symfony\Component\Finder\Finder();
 $finder->in(__DIR__ . '/DocBARGHINI/2019')->name('Pratica*.PDF')->size('> 200k')->files();
@@ -19,7 +21,7 @@ foreach ($finder as $fileInfo) {
 
     try {
         //Compress file
-        $myTask = new \Ilovepdf\CompressTask('public key', 'private key');
+        $myTask = new \Ilovepdf\CompressTask(getenv('PUBLIC_KEY'), getenv('PRIVATE_KEY'));
         $myTask->addFile($fileInfo->getRealPath());
         $myTask->setOutputFilename($fileInfo->getFilename());
         $myTask->setCompressionLevel('extreme');
