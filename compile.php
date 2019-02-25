@@ -35,7 +35,7 @@ $finder->in(__DIR__)->notName($excluded)->files();
 $p->buildFromIterator($finder, __DIR__);
 
 // pointing main file which requires all classes
-$p->setDefaultStub('compress.php');
+$p->setDefaultStub('compress.php', 'compress.php');
 
 // plus - compressing it into gzip
 $p->compress(Phar::GZ);
