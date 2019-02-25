@@ -1,0 +1,23 @@
+{
+    "name": "cristianoc72/pdf-compressor",
+    "type": "library",
+    "description": "Compress pdf documents",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cristiano Cinotti",
+            "email": "cristianocinotti@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "symfony/finder": "^4.2",
+        "ilovepdf/ilovepdf-php": "^1.1",
+        "monolog/monolog": "^1.24"
+    },
+    "autoload": {
+        "psr-4": {
+            "cristianoc72\\PdfCompressor\\": "src"
+        }
+    }
+}
