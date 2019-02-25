@@ -1,14 +1,20 @@
 <?php declare(strict_types=1);
+/**
+ * Compress Siad PDF documents to create electronic invoices.
+ * It uses IlovePdf library.
+ */
 
 require 'vendor/autoload.php';
 
+const DOCS_DIR = 'C:/siad/DocBARGHINI/2019';
+
 $logger = new \Monolog\Logger('Siad pdf compressor');
-$logger->pushHandler(new \Monolog\Handler\StreamHandler(__DIR__ . '/pdf-compressor.log'));
+$logger->pushHandler(new \Monolog\Handler\StreamHandler(DOCS_DIR . '/pdf-compressor.log'));
 $dotenv = new \Symfony\Component\Dotenv\Dotenv();
-$dotenv->load(__DIR__.'/.env');
+$dotenv->load(__DIR__ . '/.env');
 
 $finder = new \Symfony\Component\Finder\Finder();
-$finder->in(__DIR__ . '/DocBARGHINI/2019')->name('Pratica*.PDF')->size('> 200k')->files();
+$finder->in(DOCS_DIR)->name('Pratica*.PDF')->size('> 200k')->files();
 
 $counter = 0;
 foreach ($finder as $fileInfo) {
