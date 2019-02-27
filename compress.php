@@ -17,12 +17,19 @@ $finder->in(getenv('DOCS_DIR'))->name('Pratica*.PDF')->size('> 200k')->files();
 
 $counter = 0;
 foreach ($finder as $fileInfo) {
+    $name = "{$fileInfo->getPath()}/Original_document.pdf";
+    $i = 0;
+    while(file_exists($name)) {
+        $i++;
+        $name = "{$fileInfo->getPath()}/Original_document($i).pdf";
+    }
+
     //Original file backup
-    if (!copy($fileInfo->getRealPath(), "{$fileInfo->getPath()}/Original_{$fileInfo->getFilename()}")) {
-        $logger->error("Error while copying '{$fileInfo->getRealPath()}' into '{$fileInfo->getPath()}/Original_{$fileInfo->getFilename()}'.");
+    if (!copy($fileInfo->getRealPath(), $name)) {
+        $logger->error("Error while copying '{$fileInfo->getRealPath()}' into '$name'.");
         die ("Impossibile effettuare il backup del file {$fileInfo->getRealPath()}.");
     }
-    $logger->info("Backup '{$fileInfo->getRealPath()}' into '{$fileInfo->getPath()}/Original_{$fileInfo->getFilename()}'.");
+    $logger->info("Backup '{$fileInfo->getRealPath()}' into '$name'.");
 
     try {
         //Compress file
