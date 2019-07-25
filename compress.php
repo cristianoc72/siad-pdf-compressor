@@ -13,7 +13,7 @@ $logger = new \Monolog\Logger('Siad pdf compressor');
 $logger->pushHandler(new \Monolog\Handler\StreamHandler(getenv('DOCS_DIR') . '/pdf-compressor.log'));
 
 $finder = new \Symfony\Component\Finder\Finder();
-$finder->in(getenv('DOCS_DIR'))->name('Pratica*.PDF')->size('> 200k')->files();
+$finder->in(getenv('DOCS_DIR'))->name('PraticaCo*.PDF')->size('> 200k')->files();
 
 $counter = 0;
 foreach ($finder as $fileInfo) {
