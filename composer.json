@@ -1,7 +1,7 @@
 {
-    "name": "cristianoc72/pdf-compressor",
-    "type": "library",
-    "description": "Compress pdf documents",
+    "name": "cristianoc72/siad-pdf-compressor",
+    "type": "application",
+    "description": "Compress pdf documents via iLovePdf library",
     "license": "MIT",
     "authors": [
         {
@@ -14,11 +14,20 @@
         "symfony/finder": "^4.2",
         "ilovepdf/ilovepdf-php": "^1.1",
         "monolog/monolog": "^1.24",
-        "symfony/dotenv": "^4.2"
+        "symfony/dotenv": "^4.2",
+        "symfony/console": "^4.3"
     },
     "autoload": {
         "psr-4": {
-            "cristianoc72\\PdfCompressor\\": "src"
+            "cristianoc72\\PdfCompressor\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "cristianoc72\\PdfCompressor\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.2"
     }
 }
