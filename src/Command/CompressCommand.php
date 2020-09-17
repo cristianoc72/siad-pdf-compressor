@@ -57,7 +57,7 @@ class CompressCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $dir = $input->getOption('dir') ?? getenv('DOCS_DIR');
-        $this->finder->in($dir)->name('PraticaCo*.PDF')->size('> 200k')->files();
+        $this->finder->in($dir)->name('PraticaCo*.PDF')->name('PraticaCo*.pdf')->size('> 200k')->files();
         $date = new DateTimeImmutable();
         $this->logger->info("{$date->format('Y-m-d H:i:s')} Compress PDF documents\n");
 
@@ -100,21 +100,18 @@ class CompressCommand extends Command
 
         $progress->finish();
 
-        if ($this->errors) {
-            $output->writeln("
+        $message = $this->errors ? "
 <error>Compression executed with errors!
 
 Please, see the log file or the displayed messages for further information.
 </error>"
-            );
-        } else {
-            $output->writeln("
+            : "
 <info>Compression successfully executed!
 
 Please, see the log file for further information.
 </info>"
-            );
-        }
+            ;
+        $output->writeln($message);
         $output->writeln("Your log file path is: " . getenv('DOCS_DIR') . "/pdf-compressor.log");
 
         return $this->errors ? Command::FAILURE : Command::SUCCESS;

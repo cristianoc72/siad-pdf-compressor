@@ -21,7 +21,7 @@ class InitCommand extends BaseCommand
     protected function configure()
     {
         $this
-            ->setDescription("Initialize the application via a `.env` encrypted file")
+            ->setDescription("Initialize the application via a `.env` file")
         ;
     }
 

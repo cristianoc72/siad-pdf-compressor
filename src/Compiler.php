@@ -11,6 +11,9 @@
 
 namespace cristianoc72\PdfCompressor;
 
+use GitElephant\Repository;
+use phootwork\file\File;
+use phootwork\lang\Text;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -31,6 +34,8 @@ class Compiler
      */
     public static function compile(string $pharFile = 'compressor.phar'): void
     {
+        self::createBin();
+
         $phar = new \Phar($pharFile, 0, 'compressor.phar');
         $phar->setSignatureAlgorithm(\Phar::SHA1);
 
@@ -40,10 +45,7 @@ class Compiler
             ->name('*.php')
             ->name('LICENSE')
             ->notName('Compiler.php')
-            ->exclude('Tests')
             ->exclude('tests')
-            ->exclude('docs')
-            ->exclude('samples')
             ->exclude('vendor/cypresslab')
             ->in(__DIR__.'/..')
         ;
@@ -54,7 +56,7 @@ class Compiler
 
     private static function createBin(): void
     {
-        $stub = <<<STUB
+        $stub = new Text(<<<STUB
 #!/usr/bin/php
 <?php declare(strict_types=1);
 
@@ -62,14 +64,17 @@ use cristianoc72\PdfCompressor\Container;
 
 require 'vendor/autoload.php';
 
-putenv("VERSION={{version}}");
+putenv("VERSION={{ version }}");
 
 \$container = new Container();
 \$app = \$container->get('app');
 \$app->run();
 
-STUB;
+STUB);
 
-        
+        $repo = new Repository(__DIR__ . '/..');
+        $stub = $stub->replace('{{ version }}', $repo->getLastTag());
+        $fileBin = new File(__DIR__ . '/../bin/compressor.php');
+        $fileBin->write($stub);
     }
 }
