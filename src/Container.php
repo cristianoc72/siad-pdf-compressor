@@ -11,32 +11,26 @@
 
 namespace cristianoc72\PdfCompressor;
 
-
 use cristianoc72\PdfCompressor\Command\CompressCommand;
 use Ilovepdf\CompressTask;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Finder\Finder;
 
 class Container extends ContainerBuilder
 {
-    public function __construct(ParameterBagInterface $parameterBag = null)
+    public function __construct(string $home = null, ParameterBagInterface $parameterBag = null)
     {
-        if ($parameterBag === null) {
-            $parameterBag = new ParameterBag();
-        }
-
-        $parameterBag->add(['version' => getenv('VERSION'), 'home' => $_SERVER['HOME']]);
         parent::__construct($parameterBag);
 
+        $home = $home ?? $_SERVER['HOME'];
+
         // Services
-        $this->addDotEnv();
+        $this->addConfiguration($home);
         $this->register('finder', Finder::class);
         $this->addIlovePdf();
         $this->addLogger();
@@ -44,25 +38,26 @@ class Container extends ContainerBuilder
         $this->addApplication();
     }
 
-    private function addDotEnv(): void
+    private function addConfiguration(string $home): void
     {
-        $this->register('dotEnv', Dotenv::class)
-            ->addMethodCall('load', ["%home%/.env"])
-        ;
+        $this->register('configuration', Configuration::class)
+            ->addArgument($home);
     }
 
     private function addIlovePdf(): void
     {
+        /** @var Configuration $config */
+        $config = $this->get('configuration');
         $this->register('iLovePdf', CompressTask::class)
-            ->addArgument("%env(PUBLIC_KEY)%")
-            ->addArgument("%env(PRIVATE_KEY)%")
+            ->addArgument($config->getPublicKey())
+            ->addArgument($config->getPrivateKey())
         ;
     }
 
     private function addLogger(): void
     {
         $this->register('streamHandler', StreamHandler::class)
-            ->addArgument("%env(DOCS_DIR)%/pdf-compressor.log")
+            ->addArgument($this->get('configuration')->getDocsDir() . "/pdf-compressor.log")
         ;
         $this->register('logger', Logger::class)
             ->addArgument('Siad Pdf Compressor')
@@ -75,6 +70,7 @@ class Container extends ContainerBuilder
             ->addArgument(new Reference('finder'))
             ->addArgument(new Reference('iLovePdf'))
             ->addArgument(new Reference('logger'))
+            ->addArgument(new Reference('configuration'))
         ;
     }
 
@@ -82,9 +78,8 @@ class Container extends ContainerBuilder
     {
         $this->register('app', Application::class)
             ->addArgument('Siad Pdf Compressor')
-            ->addArgument("%version%")
             ->addMethodCall('addCommands', [
-                new Reference('compress')
+                [new Reference('compress')]
             ])
         ;
     }

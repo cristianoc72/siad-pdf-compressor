@@ -3,5 +3,7 @@ composer.phar
 composer.lock
 compressor.*
 *.cache
+*.phar
 coverage/
+site/
 vendor/

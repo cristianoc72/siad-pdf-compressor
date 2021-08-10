@@ -15,5 +15,4 @@ use Symfony\Component\Console\Command\Command;
 
 class RevertCommand extends Command
 {
-
 }
