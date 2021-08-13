@@ -15,20 +15,20 @@ use cristianoc72\PdfCompressor\Container;
 use Ilovepdf\CompressTask;
 use Ilovepdf\Exceptions\AuthException;
 use Ilovepdf\Exceptions\DownloadException;
-use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {
+    use FilesystemPopulatorTrait;
+
     private vfsStreamDirectory $root;
     private Container $testContainer;
 
     public function setUp(): void
     {
         $this->root = vfsStream::setup();
-        $this->populateFilesystem();
     }
 
     public function getContainer(): Container
@@ -81,22 +81,5 @@ class TestCase extends BaseTestCase
             ->willThrowException(new \Exception('Generic error'));
 
         return $iLovePdfMock;
-    }
-
-    private function populateFilesystem(): void
-    {
-        $docsDir = vfsStream::newDirectory('docs')->at($this->root);
-        $dotEnv = vfsStream::newFile('.env')->at($this->root)->setContent(
-            "
-PUBLIC_KEY=public_key
-PRIVATE_KEY=private_key
-DOCS_DIR={$docsDir->url()}
-"
-        );
-        for ($i = 0; $i < 5; $i++) {
-            $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
-                ->at($docsDir)->withContent(LargeFileContent::withKilobytes(300))
-            ;
-        }
     }
 }

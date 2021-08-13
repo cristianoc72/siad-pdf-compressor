@@ -10,48 +10,24 @@
 namespace cristianoc72\PdfCompressor\Tests\Command;
 
 use cristianoc72\PdfCompressor\Tests\TestCase;
-use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Dotenv\Exception\PathException;
 
 class CompressCommandTest extends TestCase
 {
-    public function testInteract(): void
+    public function testCompress(): void
     {
+        $this->populateFilesystem();
         $container = $this->getContainer();
 
         $app = $container->get('app');
         $command = $app->find('compress');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            '--dir' => 'vfs://root/my/awesome/dir',
-            '--public-key' => 'my_public_key',
-            '--private-key' => 'my_private_key'
+            '--log-file' => vfsStream::url('root/pdf-compressor.log')
         ]);
-
-        // test output
-        $expectedOutput = 'Symfony\Component\Finder\Exception\DirectoryNotFoundException
-The "vfs://root/my/awesome/dir" directory does not exist.
-';
-        $output = $commandTester->getDisplay();
-        $this->assertStringContainsString($expectedOutput, $output);
-
-        $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/pdf-compressor.log");
-
-        for ($i = 0; $i < 5; $i++) {
-            $this->assertFileExists("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF");
-            $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
-        }
-    }
-
-    public function testCompress(): void
-    {
-        $container = $this->getContainer();
-
-        $app = $container->get('app');
-        $command = $app->find('compress');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([]);
 
         // test output
         $expectedOutput = "
@@ -59,7 +35,7 @@ Compression successfully executed!
 
 Please, see the log file for further information.
 
-Your log file path is: vfs://root/docs/pdf-compressor.log
+Your log file path is: vfs://root/pdf-compressor.log
 ";
         $expectedProgressBar = " 0/5 [>---------------------------]   0%
  1/5 [=====>----------------------]  20%
@@ -71,10 +47,10 @@ Your log file path is: vfs://root/docs/pdf-compressor.log
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString($expectedOutput, $output);
         $this->assertStringContainsString($expectedProgressBar, $output);
+        $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
+        $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
 
-        $this->assertFileExists("{$this->getRoot()->url()}/docs/pdf-compressor.log");
-
-        $logContent = file_get_contents("{$this->getRoot()->url()}/docs/pdf-compressor.log");
+        $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
         for ($i = 0; $i < 5; $i++) {
             $this->assertFileExists("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
@@ -88,7 +64,7 @@ Your log file path is: vfs://root/docs/pdf-compressor.log
 
     public function testCompressWithFileErrors(): void
     {
-        $this->populateWithNotReadableFile();
+        $this->populateWithOneNotReadableFile();
 
         $container = $this->getContainer();
 
@@ -97,20 +73,22 @@ Your log file path is: vfs://root/docs/pdf-compressor.log
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
 
+        $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
+
         // test output
         $expectedOutput = "
 Compression executed with errors!
 
 Please, see the log file or the displayed messages for further information.
 
-Your log file path is: vfs://root/docs/pdf-compressor.log
+Your log file path is: vfs://root/pdf-compressor.log
 ";
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString($expectedOutput, $output);
 
-        $this->assertFileExists("{$this->getRoot()->url()}/docs/pdf-compressor.log");
+        $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
 
-        $logContent = file_get_contents("{$this->getRoot()->url()}/docs/pdf-compressor.log");
+        $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
         for ($i = 0; $i < 5; $i++) {
             $this->assertFileExists("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
@@ -128,6 +106,7 @@ Your log file path is: vfs://root/docs/pdf-compressor.log
 
     public function testCompressWithAuthError(): void
     {
+        $this->populateFilesystem();
         $container = $this->getContainer();
         $container->set('iLovePdf', $this->getIlovePdfWithAuthException());
 
@@ -136,20 +115,22 @@ Your log file path is: vfs://root/docs/pdf-compressor.log
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
 
+        $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
+
         // test output
         $expectedOutput = "
 Compression executed with errors!
 
 Please, see the log file or the displayed messages for further information.
 
-Your log file path is: vfs://root/docs/pdf-compressor.log
+Your log file path is: vfs://root/pdf-compressor.log
 ";
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString($expectedOutput, $output);
 
-        $this->assertFileExists("{$this->getRoot()->url()}/docs/pdf-compressor.log");
+        $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
 
-        $logContent = file_get_contents("{$this->getRoot()->url()}/docs/pdf-compressor.log");
+        $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
         for ($i = 0; $i < 5; $i++) {
             $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
@@ -167,6 +148,7 @@ Your log file path is: vfs://root/docs/pdf-compressor.log
 
     public function testCompressWithDownloadError(): void
     {
+        $this->populateFilesystem();
         $container = $this->getContainer();
         $container->set('iLovePdf', $this->getIlovePdfWithDownloadException());
 
@@ -175,20 +157,22 @@ Your log file path is: vfs://root/docs/pdf-compressor.log
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
 
+        $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
+
         // test output
         $expectedOutput = "
 Compression executed with errors!
 
 Please, see the log file or the displayed messages for further information.
 
-Your log file path is: vfs://root/docs/pdf-compressor.log
+Your log file path is: vfs://root/pdf-compressor.log
 ";
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString($expectedOutput, $output);
 
-        $this->assertFileExists("{$this->getRoot()->url()}/docs/pdf-compressor.log");
+        $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
 
-        $logContent = file_get_contents("{$this->getRoot()->url()}/docs/pdf-compressor.log");
+        $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
         for ($i = 0; $i < 5; $i++) {
             $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
@@ -206,6 +190,7 @@ Your log file path is: vfs://root/docs/pdf-compressor.log
 
     public function testCompressWithGenericError(): void
     {
+        $this->populateFilesystem();
         $container = $this->getContainer();
         $container->set('iLovePdf', $this->getIlovePdfWithException());
 
@@ -214,20 +199,22 @@ Your log file path is: vfs://root/docs/pdf-compressor.log
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
 
+        $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
+
         // test output
         $expectedOutput = "
 Compression executed with errors!
 
 Please, see the log file or the displayed messages for further information.
 
-Your log file path is: vfs://root/docs/pdf-compressor.log
+Your log file path is: vfs://root/pdf-compressor.log
 ";
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString($expectedOutput, $output);
 
-        $this->assertFileExists("{$this->getRoot()->url()}/docs/pdf-compressor.log");
+        $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
 
-        $logContent = file_get_contents("{$this->getRoot()->url()}/docs/pdf-compressor.log");
+        $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
         for ($i = 0; $i < 5; $i++) {
             $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
@@ -243,24 +230,14 @@ Your log file path is: vfs://root/docs/pdf-compressor.log
         );
     }
 
-    private function populateWithNotReadableFile(): void
+    public function testCompressWithNoConfigFileThrowsException(): void
     {
-        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
-        $dotEnv = vfsStream::newFile('.env')->at($this->getRoot())->setContent(
-            "
-PUBLIC_KEY=public_key
-PRIVATE_KEY=private_key
-DOCS_DIR={$docsDir->url()}
-"
-        );
-        for ($i = 0; $i < 5; $i++) {
-            $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
-                ->at($docsDir)->withContent(LargeFileContent::withKilobytes(500))
-            ;
-        }
+        $this->expectException(PathException::class);
+        $this->expectExceptionMessage('Unable to read the "vfs://root/.env" environment file.');
 
-        vfsStream::newFile("PraticaCollaudata_5.PDF")
-            ->at($docsDir)->withContent(LargeFileContent::withKilobytes(500))->chmod(000)
-        ;
+        $root = $this->getRoot();
+        $root->removeChild('.env');
+
+        $container = $this->getContainer();
     }
 }

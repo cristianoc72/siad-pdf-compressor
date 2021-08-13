@@ -22,47 +22,28 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
-class CompressCommand extends Command
+class CompressCommand extends BaseCommand
 {
     protected static $defaultName = 'compress';
+    protected CompressTask $iLovePdf;
 
-    private Finder $finder;
-    private CompressTask $iLovePdf;
-    private Logger $logger;
-    private Configuration $configuration;
-    private bool $errors = false;
-
-    public function __construct(Finder $finder, CompressTask $iLovePdf, Logger $logger, Configuration $configuration)
+    public function __construct(Finder $finder, Logger $logger, Configuration $configuration, CompressTask $iLovePdf)
     {
-        $this->finder = $finder;
         $this->iLovePdf = $iLovePdf;
-        $this->logger = $logger;
-        $this->configuration = $configuration;
 
-        parent::__construct();
+        parent::__construct($finder, $logger, $configuration);
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription("Compress all the PDF into the given directory")
-            ->addOption('dir', null, InputArgument::REQUIRED, 'The directory containing the pdf files to compress.')
             ->addOption('public-key', null, InputArgument::REQUIRED, 'IlovePdf public key.')
             ->addOption('private-key', null, InputArgument::REQUIRED, 'IlovePdf private key.')
+            ->addOption('log-file', null, InputArgument::REQUIRED, 'Log file')
         ;
-    }
 
-    protected function interact(InputInterface $input, OutputInterface $output): void
-    {
-        if (!empty($input->getOption('dir'))) {
-            $this->configuration->setDocsDir($input->getOption('dir'));
-        }
-        if (!empty($input->getOption('public-key'))) {
-            $this->configuration->setPublicKey($input->getOption('public-key'));
-        }
-        if (!empty($input->getOption('private-key'))) {
-            $this->configuration->setPublicKey($input->getOption('private-key'));
-        }
+        parent::configure();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -118,7 +99,7 @@ Please, see the log file or the displayed messages for further information.
 Please, see the log file for further information.
 </info>";
             $output->writeln($message);
-            $output->writeln("Your log file path is: {$this->configuration->getDocsDir()}/pdf-compressor.log");
+            $output->writeln("Your log file path is: {$this->configuration->getLogFile()}");
         } catch (Exception $e) {
             $output->writeln('<error>' . get_class($e) . '</error>');
             $output->writeln("<error>{$e->getMessage()}</error>");
@@ -127,13 +108,5 @@ Please, see the log file for further information.
         }
 
         return $this->errors ? Command::FAILURE : Command::SUCCESS;
-    }
-
-    private function showError(Exception $exception, OutputInterface $output): void
-    {
-        $message = get_class($exception) . ": {$exception->getMessage()}";
-        $this->logger->error($message);
-        $output->writeln("<error>$message</error>");
-        $this->errors = true;
     }
 }

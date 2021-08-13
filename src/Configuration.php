@@ -9,6 +9,8 @@
 
 namespace cristianoc72\PdfCompressor;
 
+use phootwork\file\exception\FileException;
+use phootwork\file\File;
 use Symfony\Component\Dotenv\Dotenv;
 
 class Configuration
@@ -16,17 +18,21 @@ class Configuration
     private string $docsDir;
     private string $publicKey = '';
     private string $privateKey = '';
-    private Dotenv $dotEnv;
+    private string $fileName = '';
+    private string $logFile = '';
 
     public function __construct(string $path = null)
     {
         $path = $path ?? $_SERVER['HOME'];
-        $this->dotEnv = new Dotenv();
-        $this->dotEnv->load("$path/.env");
+        $this->fileName = "$path/.env";
+
+        $dotEnv = new Dotenv();
+        $dotEnv->load($this->fileName);
 
         $this->docsDir = $_ENV['DOCS_DIR'];
         $this->privateKey = $_ENV['PRIVATE_KEY'];
         $this->publicKey = $_ENV['PUBLIC_KEY'];
+        $this->logFile = $_ENV['LOG_FILE'];
     }
 
     public function getDocsDir(): string
@@ -59,8 +65,31 @@ class Configuration
         $this->privateKey = $privateKey;
     }
 
-    public function getDotEnv(): Dotenv
+    public function getLogFile(): string
     {
-        return $this->dotEnv;
+        return $this->logFile;
+    }
+
+    public function setLogFile(string $logFile): void
+    {
+        $this->logFile = $logFile;
+    }
+
+    /**
+     * @throws FileException If something went wrong in reading template and writing `.env` file
+     */
+    public function saveConfiguration(): void
+    {
+        $tplFile = new File(__DIR__ . '/../resources/templates/.env.mustache');
+        $content = $tplFile->read()
+            ->replace(
+                ['{{ docsDir }}', '{{ privateKey }}', '{{ publicKey }}', '{{ logFile }}'],
+                [$this->docsDir, $this->privateKey, $this->publicKey, $this->logFile]
+            );
+        $file = new File($this->fileName);
+        if (!$file->isWritable()) {
+            throw new FileException("Impossible to write the file `{$this->fileName}`: do you have the correct permissions?");
+        }
+        $file->write($content);
     }
 }

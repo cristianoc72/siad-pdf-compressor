@@ -12,6 +12,8 @@
 namespace cristianoc72\PdfCompressor;
 
 use cristianoc72\PdfCompressor\Command\CompressCommand;
+use cristianoc72\PdfCompressor\Command\InitCommand;
+use cristianoc72\PdfCompressor\Command\RevertCommand;
 use Ilovepdf\CompressTask;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -57,7 +59,7 @@ class Container extends ContainerBuilder
     private function addLogger(): void
     {
         $this->register('streamHandler', StreamHandler::class)
-            ->addArgument($this->get('configuration')->getDocsDir() . "/pdf-compressor.log")
+            ->addArgument($this->get('configuration')->getLogFile())
         ;
         $this->register('logger', Logger::class)
             ->addArgument('Siad Pdf Compressor')
@@ -68,8 +70,18 @@ class Container extends ContainerBuilder
     {
         $this->register('compress', CompressCommand::class)
             ->addArgument(new Reference('finder'))
-            ->addArgument(new Reference('iLovePdf'))
             ->addArgument(new Reference('logger'))
+            ->addArgument(new Reference('configuration'))
+            ->addArgument(new Reference('iLovePdf'))
+        ;
+
+        $this->register('revert', RevertCommand::class)
+            ->addArgument(new Reference('finder'))
+            ->addArgument(new Reference('logger'))
+            ->addArgument(new Reference('configuration'))
+        ;
+
+        $this->register('init', InitCommand::class)
             ->addArgument(new Reference('configuration'))
         ;
     }
@@ -79,7 +91,7 @@ class Container extends ContainerBuilder
         $this->register('app', Application::class)
             ->addArgument('Siad Pdf Compressor')
             ->addMethodCall('addCommands', [
-                [new Reference('compress')]
+                [new Reference('compress'), new Reference('revert'), new Reference('init')]
             ])
         ;
     }
