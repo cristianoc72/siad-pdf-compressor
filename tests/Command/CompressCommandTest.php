@@ -37,16 +37,8 @@ Please, see the log file for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
 ";
-        $expectedProgressBar = " 0/5 [>---------------------------]   0%
- 1/5 [=====>----------------------]  20%
- 2/5 [===========>----------------]  40%
- 3/5 [================>-----------]  60%
- 4/5 [======================>-----]  80%
- 5/5 [============================] 100%
-";
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString($expectedOutput, $output);
-        $this->assertStringContainsString($expectedProgressBar, $output);
         $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
         $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
 

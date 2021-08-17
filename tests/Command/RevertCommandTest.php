@@ -72,7 +72,6 @@ Your log file path is: vfs://root/pdf-compressor.log
 
     public function testRevertNotWriteableFiles(): void
     {
-
         $this->populateNotWriteableFilesToRestore();
         $app = $this->getContainer()->get('app');
         $command = $app->find('revert');
