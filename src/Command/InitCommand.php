@@ -46,7 +46,10 @@ class InitCommand extends Command
         $helper = $this->getHelper('question');
 
         do {
-            $docDirQuestion = new Question('Please enter the name of the directory containing the documents to compress');
+            $docDirQuestion = new Question(
+                'Please enter the name of the directory containing the documents to compress',
+                'C:\\siad'
+            );
             $this->configuration->setDocsDir($helper->ask($input, $output, $docDirQuestion));
             $dir = new Directory($this->configuration->getDocsDir());
             if (!$dir->exists()) {
@@ -65,6 +68,12 @@ class InitCommand extends Command
             ''
         );
         $this->configuration->setPrivateKey($helper->ask($input, $output, $privateKeyQuestion));
+
+        $logFileQuestion = new Question(
+            'Please enter the path for your log file',
+            $this->configuration->getDocsDir() . '/pdf-compressor.log'
+        );
+        $this->configuration->setLogFile($helper->ask($input, $output, $logFileQuestion));
 
         try {
             $this->configuration->saveConfiguration();

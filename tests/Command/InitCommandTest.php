@@ -26,7 +26,12 @@ class InitCommandTest extends TestCase
         $command = $app->find('init');
 
         $commandTester = new CommandTester($command);
-        $commandTester->setInputs([vfsStream::url('root/docs'), 'ilovepdf_public_key', 'ilovepdf_private_key']);
+        $commandTester->setInputs([
+            vfsStream::url('root/docs'),
+            'ilovepdf_public_key',
+            'ilovepdf_private_key',
+            '/home/pdf-compressor.log'
+        ]);
 
         $commandTester->execute([]);
 
@@ -45,6 +50,7 @@ If you want to change it, please run `init` command again.
         $this->assertStringContainsString("DOCS_DIR=" . vfsStream::url('root/docs'), $dotenvContent);
         $this->assertStringContainsString("PRIVATE_KEY=ilovepdf_private_key", $dotenvContent);
         $this->assertStringContainsString("PUBLIC_KEY=ilovepdf_public_key", $dotenvContent);
+        $this->assertStringContainsString("LOG_FILE=/home/pdf-compressor.log", $dotenvContent);
     }
 
     public function testInitWrongDirectory(): void

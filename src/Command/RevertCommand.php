@@ -29,7 +29,7 @@ class RevertCommand extends BaseCommand
     protected function configure(): void
     {
         $this
-            ->setDescription("Revert the compressed documents the original state.")
+            ->setDescription("Revert the compressed documents to the original state.")
             ->addOption('log-file', null, InputArgument::REQUIRED, 'Log file')
         ;
 

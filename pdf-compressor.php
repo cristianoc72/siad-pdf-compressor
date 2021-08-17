@@ -35,5 +35,6 @@ PUBLIC_KEY=''
 LOG_FILE=''
 ");
 } catch (Exception $e) {
-    echo "ERROR: {$e->getMessage()}\n\n";
+    echo "ERROR: " . get_class($e) . " {$e->getMessage()}\n";
+    echo "Please, run `init` command to configure the application.\n\n";
 }
