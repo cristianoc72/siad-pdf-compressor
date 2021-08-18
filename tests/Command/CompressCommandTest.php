@@ -37,7 +37,7 @@ Please, see the log file for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
 ";
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString($expectedOutput, $output);
         $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
         $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
@@ -75,7 +75,7 @@ Please, see the log file or the displayed messages for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
 ";
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString($expectedOutput, $output);
 
         $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
@@ -117,7 +117,7 @@ Please, see the log file or the displayed messages for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
 ";
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString($expectedOutput, $output);
 
         $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
@@ -159,7 +159,7 @@ Please, see the log file or the displayed messages for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
 ";
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString($expectedOutput, $output);
 
         $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
@@ -201,7 +201,7 @@ Please, see the log file or the displayed messages for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
 ";
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString($expectedOutput, $output);
 
         $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");

@@ -32,7 +32,7 @@ class BaseCommandTest extends TestCase
         $expectedOutput = 'Symfony\Component\Finder\Exception\DirectoryNotFoundException
 The "vfs://root/my/awesome/dir" directory does not exist.
 ';
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString($expectedOutput, $output);
 
         $this->assertFileDoesNotExist("{$this->getRoot()->url()}/pdf-compressor.log");

@@ -41,7 +41,7 @@ class InitCommandTest extends TestCase
         $expectedOutput = 'Configuration file successfully created!
 If you want to change it, please run `init` command again.
 ';
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString($expectedOutput, $output);
 
         // test configuration file
@@ -70,7 +70,7 @@ If you want to change it, please run `init` command again.
         ]);
         $commandTester->execute([]);
 
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString("Error! The document directory does not exists.", $output);
     }
 
@@ -112,7 +112,7 @@ If you want to change it, please run `init` command again.
 
         $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
 
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString(
             'Error! Impossible to write the file `vfs://root/.env`: do you have the correct permissions?',
             $output

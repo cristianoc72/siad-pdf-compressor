@@ -35,7 +35,7 @@ Please, see the log file for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
 ';
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString($expectedOutput, $output);
 
         $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
@@ -64,7 +64,7 @@ Your log file path is: vfs://root/pdf-compressor.log
         $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
 
         // test output
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString('0 original documents successfully restored.', $output);
 
         $this->assertFileDoesNotExist("{$this->getRoot()->url()}/pdf-compressor.log");
@@ -82,7 +82,7 @@ Your log file path is: vfs://root/pdf-compressor.log
         $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
 
         // test output
-        $output = $commandTester->getDisplay();
+        $output = $commandTester->getDisplay(true);
         $this->assertStringContainsString('Restore original documents executed with errors!', $output);
 
         $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
