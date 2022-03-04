@@ -56,7 +56,7 @@ class TestCase extends BaseTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $iLovePdfMock->method('execute')
-            ->willThrowException(new AuthException('Invalid credentials', 401, null, ''));
+            ->willThrowException(new AuthException('Invalid credentials', 401, null, null));
 
         return $iLovePdfMock;
     }
@@ -67,7 +67,7 @@ class TestCase extends BaseTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $iLovePdfMock->method('download')
-            ->willThrowException(new DownloadException('Download error', 320, null, ''));
+            ->willThrowException(new DownloadException('Download error', 320, null, null));
 
         return $iLovePdfMock;
     }

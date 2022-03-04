@@ -21,6 +21,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
+use function PHPUnit\Framework\directoryExists;
 
 class CompressCommand extends BaseCommand
 {
@@ -49,8 +50,12 @@ class CompressCommand extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->finder->in($this->configuration->getDocsDir())
-                ->name('PraticaCo*.PDF')->name('PraticaCo*.pdf')
+            $this->finder->in($this->configuration->getDocsDir());
+            if ('' !== $previousDir = $this->getPreviousDocsDir()) {
+                $this->finder->in($previousDir);
+            }
+
+            $this->finder->name('PraticaCo*.PDF')->name('PraticaCo*.pdf')
                 ->size('> 200k')
                 ->files();
 
@@ -62,16 +67,16 @@ class CompressCommand extends BaseCommand
                     $file = new File($fileInfo->getPathname());
 
                     //Original file backup
-                    $backupFile = new File($file->getDirname()->ensureEnd('/')->append("Original_")->append($file->getFilename()));
+                    $backupFile = new File($file->getDirname()->ensureEnd(DIRECTORY_SEPARATOR)->append("Original_")->append($file->getFilename()));
                     $file->copy($backupFile->toPath());
                     $this->logger->info("Backup `{$file->getPathname()}` into `{$backupFile->getPathname()}`.");
 
                     //Compress file
-                    $this->iLovePdf->addFile($file->getPathname());
-                    $this->iLovePdf->setOutputFilename($file->getFilename());
+                    $this->iLovePdf->addFile($file->getPathname()->toString());
+                    $this->iLovePdf->setOutputFilename($file->getFilename()->toString());
                     $this->iLovePdf->setCompressionLevel('extreme');
                     $this->iLovePdf->execute();
-                    $this->iLovePdf->download($file->getDirname());
+                    $this->iLovePdf->download($file->getDirname()->toString());
 
                     $this->logger->info("`{$file->getPathname()}` compressed.");
 
@@ -80,8 +85,10 @@ class CompressCommand extends BaseCommand
                     $this->showError($fileException, $output);
                 } catch (Exception $exception) {
                     $this->showError($exception, $output);
-                    $backupFile->delete();
-                    $this->logger->info("Remove backup file `{$backupFile->getPathname()}`.");
+                    if (isset($backupFile)) {
+                        $backupFile->delete();
+                        $this->logger->info("Remove backup file `{$backupFile->getPathname()}`.");
+                    }
                 }
             }
 
@@ -108,5 +115,14 @@ Please, see the log file for further information.
         }
 
         return $this->errors ? Command::FAILURE : Command::SUCCESS;
+    }
+
+    private function getPreviousDocsDir(): string
+    {
+        $dir = $this->configuration->getDocsDir();
+        $year = substr($dir, -4);
+        $prevDir = str_replace($year, (string) ((int) $year - 1), $dir);
+
+        return file_exists($prevDir) ? $prevDir : '';
     }
 }

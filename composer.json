@@ -36,7 +36,7 @@
         "susina/coding-standard": "^2"
     },
     "scripts": {
-        "analytics": "vendor/bin/psalm.phar",
+        "analytics": "php vendor/bin/psalm.phar",
         "check": [
             "@test",
             "@analytics",

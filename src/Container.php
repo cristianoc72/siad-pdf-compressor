@@ -14,6 +14,7 @@ namespace cristianoc72\PdfCompressor;
 use cristianoc72\PdfCompressor\Command\CompressCommand;
 use cristianoc72\PdfCompressor\Command\InitCommand;
 use cristianoc72\PdfCompressor\Command\RevertCommand;
+use Exception;
 use Ilovepdf\CompressTask;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -57,10 +58,13 @@ class Container extends ContainerBuilder
         ;
     }
 
+    /**
+     * @throws Exception
+     */
     private function addLogger(): void
     {
         $this->register('streamHandler', StreamHandler::class)
-            ->addArgument($this->get('configuration')->getLogFile())
+            ->addArgument($this->get('configuration')?->getLogFile())
         ;
         $this->register('logger', Logger::class)
             ->addArgument('Siad Pdf Compressor')

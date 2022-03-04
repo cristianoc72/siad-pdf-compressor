@@ -46,7 +46,7 @@ Your log file path is: vfs://root/pdf-compressor.log
             $this->assertFileExists("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF");
             $this->assertEquals(307200, filesize("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF"));
             $this->assertStringContainsString(
-                "INFO: Reverted `vfs://root/docs/Original_PraticaCollaudata_$i.PDF` into `vfs://root/docs/PraticaCollaudata_$i.PDF`",
+                "INFO: Reverted `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_PraticaCollaudata_$i.PDF` into `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF`",
                 $logContent
             );
         }
@@ -92,7 +92,9 @@ Your log file path is: vfs://root/pdf-compressor.log
             $this->assertFileExists("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
             $this->assertFileExists("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF");
             $this->assertStringContainsString(
-                "ERROR: phootwork\\file\\exception\\FileException: Failed to move vfs://root/docs/Original_PraticaCollaudata_$i.PDF to vfs://root/docs/PraticaCollaudata_$i.PDF",
+                "ERROR: phootwork\\file\\exception\\FileException: Failed to move vfs://root/docs" .
+                DIRECTORY_SEPARATOR .
+                "Original_PraticaCollaudata_$i.PDF to vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF",
                 $logContent
             );
         }
