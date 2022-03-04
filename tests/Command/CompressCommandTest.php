@@ -32,7 +32,6 @@ class CompressCommandTest extends TestCase
         // test output
         $expectedOutput = "
 Compression successfully executed!
-
 Please, see the log file for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
@@ -73,7 +72,6 @@ Your log file path is: vfs://root/pdf-compressor.log
         // test output
         $expectedOutput = "
 Compression executed with errors!
-
 Please, see the log file or the displayed messages for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
@@ -115,7 +113,6 @@ Your log file path is: vfs://root/pdf-compressor.log
         // test output
         $expectedOutput = "
 Compression executed with errors!
-
 Please, see the log file or the displayed messages for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
@@ -157,7 +154,6 @@ Your log file path is: vfs://root/pdf-compressor.log
         // test output
         $expectedOutput = "
 Compression executed with errors!
-
 Please, see the log file or the displayed messages for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
@@ -199,7 +195,6 @@ Your log file path is: vfs://root/pdf-compressor.log
         // test output
         $expectedOutput = "
 Compression executed with errors!
-
 Please, see the log file or the displayed messages for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log

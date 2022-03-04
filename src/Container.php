@@ -54,7 +54,6 @@ class Container extends ContainerBuilder
         $this->register('iLovePdf', CompressTask::class)
             ->addArgument($config->getPublicKey())
             ->addArgument($config->getPrivateKey())
-            ->addArgument(false)
         ;
     }
 

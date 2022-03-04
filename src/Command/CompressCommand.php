@@ -96,13 +96,11 @@ class CompressCommand extends BaseCommand
 
             $message = $this->errors ? "
 <error>Compression executed with errors!
-
 Please, see the log file or the displayed messages for further information.
 </error>"
                 : "
 
 <info>Compression successfully executed!
-
 Please, see the log file for further information.
 </info>";
             $output->writeln($message);
