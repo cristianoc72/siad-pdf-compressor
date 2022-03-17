@@ -12,6 +12,7 @@ namespace cristianoc72\PdfCompressor\Command;
 use cristianoc72\PdfCompressor\Configuration;
 use Exception;
 use Ilovepdf\CompressTask;
+use Ilovepdf\Ilovepdf;
 use Monolog\Logger;
 use phootwork\file\exception\FileException;
 use phootwork\file\File;
@@ -26,9 +27,9 @@ use function PHPUnit\Framework\directoryExists;
 class CompressCommand extends BaseCommand
 {
     protected static $defaultName = 'compress';
-    protected CompressTask $iLovePdf;
+    protected Ilovepdf $iLovePdf;
 
-    public function __construct(Finder $finder, Logger $logger, Configuration $configuration, CompressTask $iLovePdf)
+    public function __construct(Finder $finder, Logger $logger, Configuration $configuration, Ilovepdf $iLovePdf)
     {
         $this->iLovePdf = $iLovePdf;
 
@@ -71,12 +72,13 @@ class CompressCommand extends BaseCommand
                     $file->copy($backupFile->toPath());
                     $this->logger->info("Backup `{$file->getPathname()}` into `{$backupFile->getPathname()}`.");
 
-                    //Compress file
-                    $this->iLovePdf->addFile($file->getPathname()->toString());
-                    $this->iLovePdf->setOutputFilename($file->getFilename()->toString());
-                    $this->iLovePdf->setCompressionLevel('extreme');
-                    $this->iLovePdf->execute();
-                    $this->iLovePdf->download($file->getDirname()->toString());
+                   //Compress file
+                    $task = $this->iLovePdf->newTask('compress');
+                    $task->addFile($file->getPathname()->toString());
+                    $task->setOutputFilename($file->getFilename()->toString());
+                    $task->setCompressionLevel('extreme');
+                    $task->execute();
+                    $task->download($file->getDirname()->toString());
 
                     $this->logger->info("`{$file->getPathname()}` compressed.");
 

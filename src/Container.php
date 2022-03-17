@@ -16,6 +16,7 @@ use cristianoc72\PdfCompressor\Command\InitCommand;
 use cristianoc72\PdfCompressor\Command\RevertCommand;
 use Exception;
 use Ilovepdf\CompressTask;
+use Ilovepdf\Ilovepdf;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Symfony\Component\Console\Application;
@@ -51,7 +52,7 @@ class Container extends ContainerBuilder
     {
         /** @var Configuration $config */
         $config = $this->get('configuration');
-        $this->register('iLovePdf', CompressTask::class)
+        $this->register('iLovePdf', Ilovepdf::class)
             ->addArgument($config->getPublicKey())
             ->addArgument($config->getPrivateKey())
         ;

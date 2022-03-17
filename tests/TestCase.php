@@ -15,6 +15,7 @@ use cristianoc72\PdfCompressor\Container;
 use Ilovepdf\CompressTask;
 use Ilovepdf\Exceptions\AuthException;
 use Ilovepdf\Exceptions\DownloadException;
+use Ilovepdf\Ilovepdf;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase as BaseTestCase;
@@ -34,9 +35,11 @@ class TestCase extends BaseTestCase
     public function getContainer(): Container
     {
         if (!isset($this->testContainer)) {
-            $iLovePdfMock = $this->getMockBuilder(CompressTask::class)
+            $iLovePdfMock = $this->getMockBuilder(Ilovepdf::class)
                 ->disableOriginalConstructor()
                 ->getMock();
+            $taskMock = $this->getMockBuilder(CompressTask::class)->disableOriginalConstructor()->getMock();
+            $iLovePdfMock->method('newTask')->willReturn($taskMock);
             $root = $this->getRoot();
             $this->testContainer = new Container($root->url());
             $this->testContainer->set('iLovePdf', $iLovePdfMock);
@@ -50,35 +53,47 @@ class TestCase extends BaseTestCase
         return $this->root;
     }
 
-    protected function getIlovePdfWithAuthException(): CompressTask
+    protected function getIlovePdfWithAuthException(): Ilovepdf
     {
-        $iLovePdfMock = $this->getMockBuilder(CompressTask::class)
+        $task = $this->getMockBuilder(CompressTask::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $iLovePdfMock->method('execute')
+        $task->method('execute')
             ->willThrowException(new AuthException('Invalid credentials', 401, null, null));
+        $iLovePdfMock = $this->getMockBuilder(Ilovepdf::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $iLovePdfMock->method('newTask')->willReturn($task);
 
         return $iLovePdfMock;
     }
 
-    protected function getIlovePdfWithDownloadException(): CompressTask
+    protected function getIlovePdfWithDownloadException(): Ilovepdf
     {
-        $iLovePdfMock = $this->getMockBuilder(CompressTask::class)
+        $task = $this->getMockBuilder(CompressTask::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $iLovePdfMock->method('download')
+        $task->method('download')
             ->willThrowException(new DownloadException('Download error', 320, null, null));
+        $iLovePdfMock = $this->getMockBuilder(Ilovepdf::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $iLovePdfMock->method('newTask')->willReturn($task);
 
         return $iLovePdfMock;
     }
 
-    protected function getIlovePdfWithException(): CompressTask
+    protected function getIlovePdfWithException(): Ilovepdf
     {
-        $iLovePdfMock = $this->getMockBuilder(CompressTask::class)
+        $task = $this->getMockBuilder(CompressTask::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $iLovePdfMock->method('execute')
+        $task->method('execute')
             ->willThrowException(new \Exception('Generic error'));
+        $iLovePdfMock = $this->getMockBuilder(Ilovepdf::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $iLovePdfMock->method('newTask')->willReturn($task);
 
         return $iLovePdfMock;
     }
