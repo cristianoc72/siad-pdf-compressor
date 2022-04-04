@@ -72,7 +72,7 @@ class CompressCommand extends BaseCommand
                     $file->copy($backupFile->toPath());
                     $this->logger->info("Backup `{$file->getPathname()}` into `{$backupFile->getPathname()}`.");
 
-                   //Compress file
+                    //Compress file
                     $task = $this->iLovePdf->newTask('compress');
                     $task->addFile($file->getPathname()->toString());
                     $task->setOutputFilename($file->getFilename()->toString());
