@@ -87,7 +87,7 @@ LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log
         $this->createDotEnv();
 
         for ($i = 0; $i < 5; $i++) {
-            vfsStream::newFile("Original_PraticaCollaudata_$i.PDF")
+            vfsStream::newFile("Original_pratica_collaudata_$i.PDF")
                 ->at($docsDir)->withContent(LargeFileContent::withKilobytes(300));
             ;
             vfsStream::newFile("PraticaCollaudata_$i.PDF")
@@ -102,7 +102,7 @@ LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log
         $this->createDotEnv();
 
         for ($i = 0; $i < 5; $i++) {
-            vfsStream::newFile("Original_PraticaCollaudata_$i.PDF")
+            vfsStream::newFile("Original_pratica_collaudata_$i.PDF")
                 ->at($docsDir)
                 ->withContent(LargeFileContent::withKilobytes(300))
             ;

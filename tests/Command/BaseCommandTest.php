@@ -23,7 +23,7 @@ class BaseCommandTest extends TestCase
         $command = $app->find('compress');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            '--dir' => 'vfs://root/my/awesome/dir',
+            '--docs-dir' => 'vfs://root/my/awesome/dir',
             '--public-key' => 'my_public_key',
             '--private-key' => 'my_private_key'
         ]);

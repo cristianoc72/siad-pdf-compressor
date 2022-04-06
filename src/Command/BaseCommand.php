@@ -11,6 +11,7 @@ namespace cristianoc72\PdfCompressor\Command;
 
 use cristianoc72\PdfCompressor\Configuration;
 use Monolog\Logger;
+use phootwork\lang\Text;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,23 +37,19 @@ class BaseCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('dir', null, InputArgument::REQUIRED, 'The directory containing the pdf files to compress.')
+            ->addOption('docs-dir', null, InputArgument::REQUIRED, 'The directory containing the pdf files to compress.')
         ;
     }
 
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        if ($input->hasOption('dir') && !empty($input->getOption('dir'))) {
-            $this->configuration->setDocsDir($input->getOption('dir'));
-        }
-        if ($input->hasOption('public-key') && !empty($input->getOption('public-key'))) {
-            $this->configuration->setPublicKey($input->getOption('public-key'));
-        }
-        if ($input->hasOption('private-key') && !empty($input->getOption('private-key'))) {
-            $this->configuration->setPrivateKey($input->getOption('private-key'));
-        }
-        if ($input->hasOption('log-file') && !empty($input->getOption('log-file'))) {
-            $this->configuration->setLogFile($input->getOption('log-file'));
+        $options = ['docs-dir', 'private-key', 'public-key', 'log-file'];
+
+        foreach ($options as $option) {
+            if ($input->hasOption($option) && !empty($input->getOption($option))) {
+                $setter = Text::create($option)->toStudlyCase()->prepend('set')->toString();
+                $this->configuration->$setter($input->getOption($option));
+            }
         }
     }
 
@@ -62,5 +59,10 @@ class BaseCommand extends Command
         $this->logger->error($message);
         $output->writeln("<error>$message</error>");
         $this->errors = true;
+    }
+
+    private function hasNotEmptyOption(InputInterface $input, string $name): bool
+    {
+        return $input->hasOption($name) && !empty($input->getOption($name));
     }
 }

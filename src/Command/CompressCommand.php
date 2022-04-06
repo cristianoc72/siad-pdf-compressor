@@ -68,7 +68,19 @@ class CompressCommand extends BaseCommand
                     $file = new File($fileInfo->getPathname());
 
                     //Original file backup
-                    $backupFile = new File($file->getDirname()->ensureEnd(DIRECTORY_SEPARATOR)->append("Original_")->append($file->getFilename()));
+                    $backupFile = new File(
+                        $file
+                            ->getDirname()
+                            ->ensureEnd(DIRECTORY_SEPARATOR)
+                            ->append("Original_")
+                            ->append(
+                                $file
+                                    ->getFilename()
+                                    ->replace($file->getExtension(), '')
+                                    ->toSnakeCase()
+                                    ->ensureEnd($file->getExtension()->toString())
+                            )
+                    );
                     $file->copy($backupFile->toPath());
                     $this->logger->info("Backup `{$file->getPathname()}` into `{$backupFile->getPathname()}`.");
 

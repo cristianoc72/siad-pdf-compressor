@@ -49,9 +49,18 @@ class RevertCommand extends BaseCommand
         foreach ($this->finder as $fileInfo) {
             try {
                 $file = new File($fileInfo->getPathname());
-                $file->move($file->getPathname()->replace('Original_', ''));
+                $fileName = $file->getFilename();
+                $affix = $fileName->substring($fileName->lastIndexOf('_'));
+                $revertName = $fileName
+                    ->replace('Original_', '')
+                    ->replace($affix, '')
+                    ->toStudlyCase()
+                    ->append($affix)
+                    ->prepend($file->getDirname()->ensureEnd(DIRECTORY_SEPARATOR))
+                ;
+                $file->move($revertName);
 
-                $this->logger->info("Reverted `{$fileInfo->getPathname()}` into `{$file->getPathname()}`.");
+                $this->logger->info("Reverted `{$fileInfo->getPathname()}` into `{$revertName}`.");
 
                 $progress->advance();
             } catch (Exception $exception) {

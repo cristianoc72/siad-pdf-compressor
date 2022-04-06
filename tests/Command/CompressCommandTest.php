@@ -44,9 +44,9 @@ Your log file path is: vfs://root/pdf-compressor.log
         $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
         for ($i = 0; $i < 5; $i++) {
-            $this->assertFileExists("{$this->getRoot()->url()}/docs" . DIRECTORY_SEPARATOR . "Original_PraticaCollaudata_$i.PDF");
+            $this->assertFileExists("{$this->getRoot()->url()}/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF");
             $this->assertStringContainsString(
-                "INFO: Backup `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` into `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_PraticaCollaudata_$i.PDF`.",
+                "INFO: Backup `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` into `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF`.",
                 $logContent
             );
             $this->assertStringContainsString("INFO: `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed.", $logContent);
@@ -84,16 +84,16 @@ Your log file path is: vfs://root/pdf-compressor.log
         $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
         for ($i = 0; $i < 5; $i++) {
-            $this->assertFileExists("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
+            $this->assertFileExists("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF");
             $this->assertFileExists("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF");
 
             $this->assertStringContainsString("INFO: `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed.", $logContent);
         }
         $this->assertStringContainsString(
-            "ERROR: phootwork\\file\\exception\\FileException: Failed to copy vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_5.PDF to vfs://root/docs/Original_PraticaCollaudata_5.PDF",
+            "ERROR: phootwork\\file\\exception\\FileException: Failed to copy vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_5.PDF to vfs://root/docs/Original_pratica_collaudata_5.PDF",
             $logContent
         );
-        $this->assertFileDoesNotExist("vfs://root/docs/Original_PraticaCollaudata_5.PDF");
+        $this->assertFileDoesNotExist("vfs://root/docs/Original_pratica_collaudata_5.PDF");
         $this->assertFileExists("vfs://root/docs/PraticaCollaudata_5.PDF");
     }
 
@@ -125,10 +125,10 @@ Your log file path is: vfs://root/pdf-compressor.log
         $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
         for ($i = 0; $i < 5; $i++) {
-            $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
+            $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF");
             $this->assertFileExists("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF");
             $this->assertStringContainsString(
-                "INFO: Remove backup file `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_PraticaCollaudata_$i.PDF",
+                "INFO: Remove backup file `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF",
                 $logContent
             );
         }
@@ -166,10 +166,10 @@ Your log file path is: vfs://root/pdf-compressor.log
         $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
         for ($i = 0; $i < 5; $i++) {
-            $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
+            $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF");
             $this->assertFileExists("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF");
             $this->assertStringContainsString(
-                "INFO: Remove backup file `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_PraticaCollaudata_$i.PDF",
+                "INFO: Remove backup file `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF",
                 $logContent
             );
         }
@@ -207,10 +207,10 @@ Your log file path is: vfs://root/pdf-compressor.log
         $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
         for ($i = 0; $i < 5; $i++) {
-            $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF");
+            $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF");
             $this->assertFileExists("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF");
             $this->assertStringContainsString(
-                "INFO: Remove backup file `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_PraticaCollaudata_$i.PDF",
+                "INFO: Remove backup file `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF",
                 $logContent
             );
         }
