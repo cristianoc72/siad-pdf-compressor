@@ -15,11 +15,9 @@ use cristianoc72\PdfCompressor\Command\CompressCommand;
 use cristianoc72\PdfCompressor\Command\InitCommand;
 use cristianoc72\PdfCompressor\Command\RevertCommand;
 use Exception;
-use Ilovepdf\CompressTask;
 use Ilovepdf\Ilovepdf;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\DependencyInjection\Reference;
@@ -95,6 +93,7 @@ class Container extends ContainerBuilder
     {
         $this->register('app', Application::class)
             ->addArgument('Siad Pdf Compressor')
+            ->addArgument(Application::VERSION)
             ->addMethodCall('addCommands', [
                 [new Reference('compress'), new Reference('revert'), new Reference('init')]
             ])
