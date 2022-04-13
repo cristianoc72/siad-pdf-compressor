@@ -1,0 +1,29 @@
+name: Build
+on:
+  release:
+    types: [ created ]
+jobs:
+  build-phar:
+    runs-on: ubuntu-latest
+    name: Build PHAR
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.0
+          ini-values: phar.readonly=0
+          tools: composer
+          coverage: none
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v2
+      - name: Download Box
+        run: wget https://github.com/box-project/box/releases/download/3.16.0/box.phar
+      - name: Build PHAR
+        run: php box.phar compile
+      - name: Upload box.phar
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: pdf-compressor.phar
