@@ -12,6 +12,10 @@ namespace cristianoc72\PdfCompressor\Command;
 use cristianoc72\PdfCompressor\Configuration;
 use Exception;
 use Ilovepdf\CompressTask;
+use Ilovepdf\Exceptions\AuthException;
+use Ilovepdf\Exceptions\PathException;
+use Ilovepdf\Exceptions\ProcessException;
+use Ilovepdf\Exceptions\UploadException;
 use Ilovepdf\Ilovepdf;
 use Monolog\Logger;
 use phootwork\file\exception\FileException;
@@ -52,14 +56,7 @@ class CompressCommand extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->finder->in($this->configuration->getDocsDir());
-            if ('' !== $previousDir = $this->getPreviousDocsDir()) {
-                $this->finder->in($previousDir);
-            }
-
-            $this->finder->name('PraticaCo*.PDF')->name('PraticaCo*.pdf')
-                ->size('> 200k')
-                ->files();
+            $this->getFiles();
 
             $progress = new ProgressBar($output, $this->finder->count());
             $progress->start();
@@ -68,34 +65,8 @@ class CompressCommand extends BaseCommand
             foreach ($this->finder as $fileInfo) {
                 try {
                     $file = new File($fileInfo->getPathname());
-
-                    //Original file backup
-                    $backupFile = new File(
-                        $file
-                            ->getDirname()
-                            ->ensureEnd(DIRECTORY_SEPARATOR)
-                            ->append("Original_")
-                            ->append(
-                                $file
-                                    ->getFilename()
-                                    ->replace($file->getExtension(), '')
-                                    ->toSnakeCase()
-                                    ->ensureEnd($file->getExtension()->toString())
-                            )
-                    );
-                    $file->copy($backupFile->toPath());
-                    $this->logger->info("Backup `{$file->getPathname()}` into `{$backupFile->getPathname()}`.");
-
-                    //Compress file
-                    /** @var CompressTask $task */
-                    $task = $this->iLovePdf->newTask('compress');
-                    $task->addFile($file->getPathname()->toString());
-                    $task->setOutputFilename($file->getFilename()->toString());
-                    $task->setCompressionLevel('extreme');
-                    $task->execute();
-                    $task->download($file->getDirname()->toString());
-
-                    $this->logger->info("`{$file->getPathname()}` compressed.");
+                    $backupFile = $this->backupFile($file);
+                    $this->compressFile($file);
 
                     $progress->advance();
                 } catch (FileException $fileException) {
@@ -139,5 +110,61 @@ Please, see the log file for further information.
         $prevDir = str_replace($year, (string) ((int) $year - 1), $dir);
 
         return file_exists($prevDir) ? $prevDir : '';
+    }
+
+    private function getFiles(): void
+    {
+        $this->finder->in($this->configuration->getDocsDir());
+        if ('' !== $previousDir = $this->getPreviousDocsDir()) {
+            $this->finder->in($previousDir);
+        }
+
+        $this->finder->name('PraticaCo*.PDF')->name('PraticaCo*.pdf')
+            ->size('> 200k')
+            ->files();
+    }
+
+    /**
+     * @throws UploadException
+     * @throws PathException
+     * @throws AuthException
+     * @throws ProcessException
+     * @throws Exception
+     */
+    private function compressFile(File $file): void
+    {
+        /** @var CompressTask $task */
+        $task = $this->iLovePdf->newTask('compress');
+        $task->addFile($file->getPathname()->toString());
+        $task->setOutputFilename($file->getFilename()->toString());
+        $task->setCompressionLevel('extreme');
+        $task->execute();
+        $task->download($file->getDirname()->toString());
+
+        $this->logger->info("`{$file->getPathname()}` compressed.");
+    }
+
+    /**
+     * @throws FileException
+     */
+    private function backupFile(File $file): File
+    {
+        $backupFile = new File(
+            $file
+                ->getDirname()
+                ->ensureEnd(DIRECTORY_SEPARATOR)
+                ->append("Original_")
+                ->append(
+                    $file
+                        ->getFilename()
+                        ->replace($file->getExtension(), '')
+                        ->toSnakeCase()
+                        ->ensureEnd($file->getExtension()->toString())
+                )
+        );
+        $file->copy($backupFile->toPath());
+        $this->logger->info("Backup `{$file->getPathname()}` into `{$backupFile->getPathname()}`.");
+
+        return $backupFile;
     }
 }

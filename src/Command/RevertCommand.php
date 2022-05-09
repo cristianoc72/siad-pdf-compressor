@@ -12,6 +12,7 @@
 namespace cristianoc72\PdfCompressor\Command;
 
 use Exception;
+use phootwork\file\exception\FileException;
 use phootwork\file\File;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -51,20 +52,7 @@ class RevertCommand extends BaseCommand
         /** @var SplFileInfo $fileInfo */
         foreach ($this->finder as $fileInfo) {
             try {
-                $file = new File($fileInfo->getPathname());
-                $fileName = $file->getFilename();
-                $affix = $fileName->substring($fileName->lastIndexOf('_') ?? $fileName->length());
-                $revertName = $fileName
-                    ->replace('Original_', '')
-                    ->replace($affix, '')
-                    ->toStudlyCase()
-                    ->append($affix)
-                    ->prepend($file->getDirname()->ensureEnd(DIRECTORY_SEPARATOR))
-                ;
-                $file->move($revertName);
-
-                $this->logger->info("Reverted `{$fileInfo->getPathname()}` into `{$revertName}`.");
-
+                $this->revertFile($fileInfo);
                 $progress->advance();
             } catch (Exception $exception) {
                 $this->showError($exception, $output);
@@ -87,5 +75,25 @@ Please, see the log file for further information.
         $output->writeln("Your log file path is: {$this->configuration->getLogFile()}");
 
         return $this->errors ? Command::FAILURE : Command::SUCCESS;
+    }
+
+    /**
+     * @throws FileException
+     */
+    private function revertFile(SplFileInfo $fileInfo): void
+    {
+        $file = new File($fileInfo->getPathname());
+        $fileName = $file->getFilename();
+        $affix = $fileName->substring($fileName->lastIndexOf('_') ?? $fileName->length());
+        $revertName = $fileName
+            ->replace('Original_', '')
+            ->replace($affix, '')
+            ->toStudlyCase()
+            ->append($affix)
+            ->prepend($file->getDirname()->ensureEnd(DIRECTORY_SEPARATOR))
+        ;
+        $file->move($revertName);
+
+        $this->logger->info("Reverted `{$fileInfo->getPathname()}` into `{$revertName}`.");
     }
 }

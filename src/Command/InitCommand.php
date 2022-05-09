@@ -22,6 +22,7 @@ class InitCommand extends Command
 {
     protected static $defaultName = 'init';
     private Configuration $configuration;
+    private ?QuestionHelper $helper = null;
 
     public function __construct(Configuration $configuration)
     {
@@ -38,44 +39,19 @@ class InitCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        /** @var QuestionHelper helper */
+        $this->helper = $this->getHelper('question');
+
         $output->writeln(
             "
 <info>Initialize the application and save the configuration on an editable `.env` file</info>
 "
         );
 
-        /** @var QuestionHelper $helper */
-        $helper = $this->getHelper('question');
-
-        do {
-            $docDirQuestion = new Question(
-                'Please enter the name of the directory containing the documents to compress',
-                'C:\\siad'
-            );
-            $this->configuration->setDocsDir((string) $helper->ask($input, $output, $docDirQuestion));
-            $dir = new Directory($this->configuration->getDocsDir());
-            if (!$dir->exists()) {
-                $output->writeln("<error>Error! The document directory does not exists.</error>");
-            }
-        } while (!$dir->exists());
-
-        $publicKeyQuestion = new Question(
-            'Please enter the iLovePdf public key (you can leave this blank and manually insert it when running `compress` command)',
-            ''
-        );
-        $this->configuration->setPublicKey((string) $helper->ask($input, $output, $publicKeyQuestion));
-
-        $privateKeyQuestion = new Question(
-            'Please enter the iLovePdf private key (you can leave this blank and manually insert it when running `compress` command)',
-            ''
-        );
-        $this->configuration->setPrivateKey((string) $helper->ask($input, $output, $privateKeyQuestion));
-
-        $logFileQuestion = new Question(
-            'Please enter the path for your log file',
-            $this->configuration->getDocsDir() . '/pdf-compressor.log'
-        );
-        $this->configuration->setLogFile((string) $helper->ask($input, $output, $logFileQuestion));
+        $this->populateDirectory($input, $output);
+        $this->populatePublicKey($input, $output);
+        $this->populatePrivateKey($input, $output);
+        $this->populateLogFile($input, $output);
 
         try {
             $this->configuration->saveConfiguration();
@@ -88,5 +64,47 @@ class InitCommand extends Command
         $output->writeln('If you want to change it, please run `init` command again.');
 
         return Command::SUCCESS;
+    }
+
+    private function populateDirectory(InputInterface $input, OutputInterface $output): void
+    {
+        do {
+            $docDirQuestion = new Question(
+                'Please enter the name of the directory containing the documents to compress',
+                'C:\\siad'
+            );
+            $this->configuration->setDocsDir((string) $this->helper->ask($input, $output, $docDirQuestion));
+            $dir = new Directory($this->configuration->getDocsDir());
+            if (!$dir->exists()) {
+                $output->writeln("<error>Error! The document directory does not exists.</error>");
+            }
+        } while (!$dir->exists());
+    }
+
+    private function populatePublicKey(InputInterface $input, OutputInterface $output): void
+    {
+        $publicKeyQuestion = new Question(
+            'Please enter the iLovePdf public key (you can leave this blank and manually insert it when running `compress` command)',
+            ''
+        );
+        $this->configuration->setPublicKey((string) $this->helper->ask($input, $output, $publicKeyQuestion));
+    }
+
+    private function populatePrivateKey(InputInterface $input, OutputInterface $output): void
+    {
+        $privateKeyQuestion = new Question(
+            'Please enter the iLovePdf private key (you can leave this blank and manually insert it when running `compress` command)',
+            ''
+        );
+        $this->configuration->setPrivateKey((string) $this->helper->ask($input, $output, $privateKeyQuestion));
+    }
+
+    private function populateLogFile(InputInterface $input, OutputInterface $output): void
+    {
+        $logFileQuestion = new Question(
+            'Please enter the path for your log file',
+            $this->configuration->getDocsDir() . '/pdf-compressor.log'
+        );
+        $this->configuration->setLogFile((string) $this->helper->ask($input, $output, $logFileQuestion));
     }
 }

@@ -6,8 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3] - Unreleased
 ### Added
--  Add a GitHub actions workflow, to automatically build the phar archive and deploy it in release assets.
--  Add the version number, to display at command line, when command is run with `--version` option.
+- Add a GitHub actions workflow, to automatically build the phar archive and deploy it in release assets.
+- Add the version number, to display at command line, when command is run with `--version` option.
+
+### Changed
+- Fix Psalm issues.
+- Decrease technical debt via CodeClimate suggestions
 
 ## [0.2] - 2022-04-07
 ### Changed
