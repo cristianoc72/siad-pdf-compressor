@@ -13,6 +13,7 @@ use cristianoc72\PdfCompressor\Configuration;
 use phootwork\file\Directory;
 use phootwork\file\exception\FileException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -43,6 +44,7 @@ class InitCommand extends Command
 "
         );
 
+        /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
 
         do {
@@ -50,7 +52,7 @@ class InitCommand extends Command
                 'Please enter the name of the directory containing the documents to compress',
                 'C:\\siad'
             );
-            $this->configuration->setDocsDir($helper->ask($input, $output, $docDirQuestion));
+            $this->configuration->setDocsDir((string) $helper->ask($input, $output, $docDirQuestion));
             $dir = new Directory($this->configuration->getDocsDir());
             if (!$dir->exists()) {
                 $output->writeln("<error>Error! The document directory does not exists.</error>");
@@ -61,19 +63,19 @@ class InitCommand extends Command
             'Please enter the iLovePdf public key (you can leave this blank and manually insert it when running `compress` command)',
             ''
         );
-        $this->configuration->setPublicKey($helper->ask($input, $output, $publicKeyQuestion));
+        $this->configuration->setPublicKey((string) $helper->ask($input, $output, $publicKeyQuestion));
 
         $privateKeyQuestion = new Question(
             'Please enter the iLovePdf private key (you can leave this blank and manually insert it when running `compress` command)',
             ''
         );
-        $this->configuration->setPrivateKey($helper->ask($input, $output, $privateKeyQuestion));
+        $this->configuration->setPrivateKey((string) $helper->ask($input, $output, $privateKeyQuestion));
 
         $logFileQuestion = new Question(
             'Please enter the path for your log file',
             $this->configuration->getDocsDir() . '/pdf-compressor.log'
         );
-        $this->configuration->setLogFile($helper->ask($input, $output, $logFileQuestion));
+        $this->configuration->setLogFile((string) $helper->ask($input, $output, $logFileQuestion));
 
         try {
             $this->configuration->saveConfiguration();

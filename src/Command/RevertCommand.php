@@ -18,6 +18,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Restore the uncompressed documents.
@@ -46,11 +47,13 @@ class RevertCommand extends BaseCommand
 
         $progress = new ProgressBar($output, $foundFiles);
         $progress->start();
+
+        /** @var SplFileInfo $fileInfo */
         foreach ($this->finder as $fileInfo) {
             try {
                 $file = new File($fileInfo->getPathname());
                 $fileName = $file->getFilename();
-                $affix = $fileName->substring($fileName->lastIndexOf('_'));
+                $affix = $fileName->substring($fileName->lastIndexOf('_') ?? $fileName->length());
                 $revertName = $fileName
                     ->replace('Original_', '')
                     ->replace($affix, '')

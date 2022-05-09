@@ -25,11 +25,11 @@ use Symfony\Component\Finder\Finder;
 
 class Container extends ContainerBuilder
 {
-    public function __construct(string $home = null, ParameterBagInterface $parameterBag = null)
+    public function __construct(string $home = '', ParameterBagInterface $parameterBag = null)
     {
         parent::__construct($parameterBag);
 
-        $home = $home ?? $_SERVER['HOME'];
+        $home = $home === '' ? (string) $_SERVER['HOME'] : $home;
 
         // Services
         $this->addConfiguration($home);
@@ -58,6 +58,8 @@ class Container extends ContainerBuilder
 
     /**
      * @throws Exception
+     *
+     * @psalm-suppress  MixedMethodCall $this->get('configuration')?->getLogFile() returns a string
      */
     private function addLogger(): void
     {

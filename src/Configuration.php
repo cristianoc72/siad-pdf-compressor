@@ -23,16 +23,16 @@ class Configuration
 
     public function __construct(string $path = null)
     {
-        $path = $path ?? $_SERVER['HOME'];
+        $path = $path ?? (string) $_SERVER['HOME'];
         $this->fileName = "$path/.env";
 
         $dotEnv = new Dotenv();
         $dotEnv->load($this->fileName);
 
-        $this->docsDir = $_ENV['DOCS_DIR'];
-        $this->privateKey = $_ENV['PRIVATE_KEY'];
-        $this->publicKey = $_ENV['PUBLIC_KEY'];
-        $this->logFile = $_ENV['LOG_FILE'];
+        $this->docsDir = (string) $_ENV['DOCS_DIR'];
+        $this->privateKey = (string) $_ENV['PRIVATE_KEY'];
+        $this->publicKey = (string) $_ENV['PUBLIC_KEY'];
+        $this->logFile = (string) $_ENV['LOG_FILE'];
     }
 
     public function getDocsDir(): string

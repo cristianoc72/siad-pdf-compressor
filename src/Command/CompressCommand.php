@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use function PHPUnit\Framework\directoryExists;
 
 class CompressCommand extends BaseCommand
@@ -63,6 +64,7 @@ class CompressCommand extends BaseCommand
             $progress = new ProgressBar($output, $this->finder->count());
             $progress->start();
 
+            /** @var SplFileInfo $fileInfo */
             foreach ($this->finder as $fileInfo) {
                 try {
                     $file = new File($fileInfo->getPathname());
@@ -85,6 +87,7 @@ class CompressCommand extends BaseCommand
                     $this->logger->info("Backup `{$file->getPathname()}` into `{$backupFile->getPathname()}`.");
 
                     //Compress file
+                    /** @var CompressTask $task */
                     $task = $this->iLovePdf->newTask('compress');
                     $task->addFile($file->getPathname()->toString());
                     $task->setOutputFilename($file->getFilename()->toString());
