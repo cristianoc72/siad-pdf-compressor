@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * Copyright (c) 2020 Cristiano Cinotti
+ * Copyright (c) 2020 - 2024 Cristiano Cinotti
  *
  * This file is part of siad-pdf-compressor package.
  * For the full copyright and license information, please view the LICENSE
@@ -15,5 +15,5 @@ use Symfony\Component\Console\Application as BaseApplication;
 
 class Application extends BaseApplication
 {
-    public const VERSION = 'Version 0.3';
+    public const VERSION = 'Version 1.0';
 }

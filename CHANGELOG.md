@@ -4,14 +4,17 @@ All notable changes to `cristianoc72/siad-pdf-compressor` project will be docume
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3] - Unreleased
+## [1.0] - Unreleased
 ### Added
 - Add a GitHub actions workflow, to automatically build the phar archive and deploy it in release assets.
 - Add the version number, to display at command line, when command is run with `--version` option.
+- Add a copy of compressed file, named '{folder}.PDF' by default, for pre-invoices
+- Add the possibility to customize the file name of pre-invoices
 
 ### Changed
 - Fix Psalm issues.
 - Decrease technical debt via CodeClimate suggestions
+- Migrate test suite from Phpunit to Pest
 
 ## [0.2] - 2022-04-07
 ### Changed

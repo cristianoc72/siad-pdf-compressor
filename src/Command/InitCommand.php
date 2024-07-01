@@ -12,15 +12,16 @@ namespace cristianoc72\PdfCompressor\Command;
 use cristianoc72\PdfCompressor\Configuration;
 use phootwork\file\Directory;
 use phootwork\file\exception\FileException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
+#[AsCommand(name: 'init')]
 class InitCommand extends Command
 {
-    protected static $defaultName = 'init';
     private Configuration $configuration;
     private ?QuestionHelper $helper = null;
 

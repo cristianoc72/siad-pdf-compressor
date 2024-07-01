@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * Copyright (c) 2020 Cristiano Cinotti
+ * Copyright (c) 2020 - 2024 Cristiano Cinotti
  *
  * This file is part of siad-pdf-compressor package.
  * For the full copyright and license information, please view the LICENSE
@@ -14,6 +14,7 @@ namespace cristianoc72\PdfCompressor\Command;
 use Exception;
 use phootwork\file\exception\FileException;
 use phootwork\file\File;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,10 +25,9 @@ use Symfony\Component\Finder\SplFileInfo;
 /**
  * Restore the uncompressed documents.
  */
+#[AsCommand(name: 'revert')]
 class RevertCommand extends BaseCommand
 {
-    protected static $defaultName = 'revert';
-
     protected function configure(): void
     {
         $this
