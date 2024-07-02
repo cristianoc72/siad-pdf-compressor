@@ -60,9 +60,4 @@ class BaseCommand extends Command
         $output->writeln("<error>$message</error>");
         $this->errors = true;
     }
-
-    private function hasNotEmptyOption(InputInterface $input, string $name): bool
-    {
-        return $input->hasOption($name) && !empty($input->getOption($name));
-    }
 }

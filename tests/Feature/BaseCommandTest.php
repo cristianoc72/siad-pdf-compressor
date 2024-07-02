@@ -9,11 +9,11 @@
 
 use Symfony\Component\Console\Tester\CommandTester;
 
-beforeEach(function() {
+beforeEach(function () {
     $this->populateFilesystem();
 });
 
-it("prepares the setter methods", function() {
+it("prepares the setter methods", function () {
     $container = $this->getContainer();
 
     $app = $container->get('app');
@@ -26,7 +26,7 @@ it("prepares the setter methods", function() {
     ]);
 
     $output = $commandTester->getDisplay(true);
-    
+
     expect($output)->toContain('Symfony\Component\Finder\Exception\DirectoryNotFoundException
 The "vfs://root/my/awesome/dir" directory does not exist.
 ')->and("{$this->getRoot()->url()}/pdf-compressor.log")->not->toBeFile();

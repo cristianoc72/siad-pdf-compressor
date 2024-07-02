@@ -59,7 +59,7 @@ LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log
         $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
         $this->createDotEnv();
 
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
                 ->at($docsDir)->withContent(LargeFileContent::withKilobytes(500))
             ;

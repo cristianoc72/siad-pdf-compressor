@@ -28,7 +28,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
-use function PHPUnit\Framework\directoryExists;
 
 #[AsCommand(name: 'compress')]
 class CompressCommand extends BaseCommand
@@ -163,6 +162,7 @@ Please, see the log file for further information.
                         ->ensureEnd($file->getExtension()->toString())
                 )
         );
+
         $file->copy($backupFile->toPath());
         $this->logger->info("Backup `{$file->getPathname()}` into `{$backupFile->getPathname()}`.");
 

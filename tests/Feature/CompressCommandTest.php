@@ -9,7 +9,6 @@
 
 namespace cristianoc72\PdfCompressor\Tests\Command;
 
-use cristianoc72\PdfCompressor\Tests\TestCase;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -37,18 +36,19 @@ Your log file path is: vfs://root/pdf-compressor.log
     expect($output)->toContain($expectedOutput)
         ->and($commandTester->getStatusCode())->toBe(Command::SUCCESS)
         ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
-    
+
     $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 5; $i++) {
         expect("{$this->getRoot()->url()}/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
             ->and($logContent)->toContain("INFO: Backup `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` into `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF`.")
-                ->toContain("INFO: `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed."
-        );
+                ->toContain(
+                    "INFO: `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed."
+                );
     }
 });
 
-it("try to compress not readable files", function() {
+it("try to compress not readable files", function () {
     $this->populateWithOneNotReadableFile();
 
     $container = $this->getContainer();
@@ -73,18 +73,18 @@ Your log file path is: vfs://root/pdf-compressor.log
 
     $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
-    for ($i = 0; $i < 5; $i++) {
+    for ($i = 0; $i < 4; $i++) {
         expect("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF")->toBeFile()
             ->and("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF")->toBeFile()
             ->and($logContent)->toContain("INFO: `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed.");
     }
 
     expect($logContent)->toContain("ERROR: phootwork\\file\\exception\\FileException: Failed to copy vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_5.PDF to vfs://root/docs/Original_pratica_collaudata_5.PDF")
-        ->and("vfs://root/docs/Original_pratica_collaudata_5.PDF")->toBeFile()
+        ->and("vfs://root/docs/Original_pratica_collaudata_5.PDF")->not->toBeFile()
         ->and("vfs://root/docs/PraticaCollaudata_5.PDF")->toBeFile();
 })->skipOnWindows();
 
-it("stops with a failure when authentication error", function() {
+it("stops with a failure when authentication error", function () {
     $this->populateFilesystem();
     $container = $this->getContainer();
     $container->set('iLovePdf', $this->getIlovePdfWithAuthException());
@@ -119,87 +119,74 @@ Your log file path is: vfs://root/pdf-compressor.log
 });
 
 it("stops with a failure when download error", function () {
-        $this->populateFilesystem();
-        $container = $this->getContainer();
-        $container->set('iLovePdf', $this->getIlovePdfWithDownloadException());
+    $this->populateFilesystem();
+    $container = $this->getContainer();
+    $container->set('iLovePdf', $this->getIlovePdfWithDownloadException());
 
-        $app = $container->get('app');
-        $command = $app->find('compress');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([]);
+    $app = $container->get('app');
+    $command = $app->find('compress');
+    $commandTester = new CommandTester($command);
+    $commandTester->execute([]);
 
-        // test output
-        $expectedOutput = "
+    // test output
+    $expectedOutput = "
 Compression executed with errors!
 Please, see the log file or the displayed messages for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
 ";
-        $output = $commandTester->getDisplay(true);
+    $output = $commandTester->getDisplay(true);
 
-        expect($commandTester->getStatusCode())->toBe(Command::FAILURE)
-            ->and($output)->toContain($expectedOutput)
-            ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+    expect($commandTester->getStatusCode())->toBe(Command::FAILURE)
+        ->and($output)->toContain($expectedOutput)
+        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
 
-        $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
-        for ($i = 0; $i < 5; $i++) {
-            expect("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF")->toBeFile()
-                ->and("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF")->toBeFile()
-                ->and($logContent)->toContain("INFO: Remove backup file `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF");
-        }
+    for ($i = 0; $i < 5; $i++) {
+        expect("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF")->not->toBeFile()
+            ->and("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and($logContent)->toContain("INFO: Remove backup file `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF");
+    }
 
-        expect($logContent)->toContain("ERROR: Ilovepdf\Exceptions\DownloadException: Download error");
+    expect($logContent)->toContain("ERROR: Ilovepdf\Exceptions\DownloadException: Download error");
 });
 
 it("stops with a failure when generic error", function () {
-        $this->populateFilesystem();
-        $container = $this->getContainer();
-        $container->set('iLovePdf', $this->getIlovePdfWithException());
+    $this->populateFilesystem();
+    $container = $this->getContainer();
+    $container->set('iLovePdf', $this->getIlovePdfWithException());
 
-        $app = $container->get('app');
-        $command = $app->find('compress');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([]);
+    $app = $container->get('app');
+    $command = $app->find('compress');
+    $commandTester = new CommandTester($command);
+    $commandTester->execute([]);
 
-        $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
-
-        // test output
-        $expectedOutput = "
+    // test output
+    $expectedOutput = "
 Compression executed with errors!
 Please, see the log file or the displayed messages for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
 ";
-        $output = $commandTester->getDisplay(true);
-        $this->assertStringContainsString($expectedOutput, $output);
+    $output = $commandTester->getDisplay(true);
 
-        $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
+    expect($commandTester->getStatusCode())->toBe(Command::FAILURE)
+        ->and($output)->toContain($expectedOutput)
+        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
 
-        $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
-        for ($i = 0; $i < 5; $i++) {
-            $this->assertFileDoesNotExist("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF");
-            $this->assertFileExists("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF");
-            $this->assertStringContainsString(
-                "INFO: Remove backup file `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF",
-                $logContent
-            );
-        }
-        $this->assertStringContainsString(
-            "ERROR: Exception: Generic error",
-            $logContent
-        );
+    for ($i = 0; $i < 5; $i++) {
+        expect("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF")->not->toBeFile()
+            ->and("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and($logContent)->toContain("INFO: Remove backup file `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF");
+    }
+
+    expect($logContent)->toContain("ERROR: Exception: Generic error");
 });
 
-    public function testCompressWithNoConfigFileThrowsException(): void
-    {
-        $this->expectException(PathException::class);
-        $this->expectExceptionMessage('Unable to read the "vfs://root/.env" environment file.');
-
-        $root = $this->getRoot();
-        $root->removeChild('.env');
-
-        $container = $this->getContainer();
-    }
-}
+it("can't find the configuration file", function () {
+    $this->getRoot()->removeChild('.env');
+    $container = $this->getContainer();
+})->throws(PathException::class, 'Unable to read the "vfs://root/.env" environment file.');

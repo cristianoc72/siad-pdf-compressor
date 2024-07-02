@@ -7,96 +7,81 @@
  * file that was distributed with this source code.
  */
 
-namespace cristianoc72\PdfCompressor\Tests\Command;
-
 use cristianoc72\PdfCompressor\Tests\TestCase;
-use phootwork\lang\Text;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class RevertCommandTest extends TestCase
-{
-    public function testRevert(): void
-    {
-        $this->populateFilesToRestore();
-        $container = $this->getContainer();
+it("reverts a compression", function () {
+    $this->populateFilesToRestore();
+    $container = $this->getContainer();
 
-        $app = $container->get('app');
-        $command = $app->find('revert');
+    $app = $container->get('app');
+    $command = $app->find('revert');
 
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([]);
+    $commandTester = new CommandTester($command);
+    $commandTester->execute([]);
 
-        $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
-
-        // test output
-        $expectedOutput = '5 original documents successfully restored.
+    $expectedOutput = '5 original documents successfully restored.
 Please, see the log file for further information.
 
 Your log file path is: vfs://root/pdf-compressor.log
 ';
-        $output = $commandTester->getDisplay(true);
-        $this->assertStringContainsString($expectedOutput, $output);
+    $output = $commandTester->getDisplay(true);
 
-        $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
+    expect($commandTester->getStatusCode())->toBe(Command::SUCCESS)
+        ->and($output)->toContain($expectedOutput)
+        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
 
-        $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
-        for ($i = 0; $i < 5; $i++) {
-            $this->assertFileExists("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF");
-            $this->assertEquals(307200, filesize("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF"));
-            $this->assertStringContainsString(
-                "INFO: Reverted `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF` into `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF`",
-                $logContent
-            );
-        }
+    for ($i = 0; $i < 5; $i++) {
+        expect("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and(filesize("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF"))->toBe(307200)
+            ->and($logContent)->toContain("INFO: Reverted `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF` into `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF`")
+        ;
     }
+});
 
-    public function testRevertUncompressedFiles(): void
-    {
-        $this->populateFilesystem();
-        $app = $this->getContainer()->get('app');
-        $command = $app->find('revert');
+it("reverts uncompressed files", function () {
+    $this->populateFilesystem();
+    $app = $this->getContainer()->get('app');
+    $command = $app->find('revert');
 
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([]);
+    $commandTester = new CommandTester($command);
+    $commandTester->execute([]);
 
-        $this->assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
+    $output = $commandTester->getDisplay(true);
 
-        // test output
-        $output = $commandTester->getDisplay(true);
-        $this->assertStringContainsString('0 original documents successfully restored.', $output);
+    expect($commandTester->getStatusCode())->toBe(Command::SUCCESS)
+        ->and($output)->toContain('0 original documents successfully restored.')
+        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->not->toBeFile()
+    ;
+});
 
-        $this->assertFileDoesNotExist("{$this->getRoot()->url()}/pdf-compressor.log");
-    }
+it("reverts not writeable files", function () {
+    $this->populateNotWriteableFilesToRestore();
+    $app = $this->getContainer()->get('app');
+    $command = $app->find('revert');
 
-    public function testRevertNotWriteableFiles(): void
-    {
-        $this->populateNotWriteableFilesToRestore();
-        $app = $this->getContainer()->get('app');
-        $command = $app->find('revert');
+    $commandTester = new CommandTester($command);
+    $commandTester->execute([]);
 
-        $commandTester = new CommandTester($command);
-        $commandTester->execute([]);
+    // test output
+    $output = $commandTester->getDisplay(true);
 
-        $this->assertEquals(Command::FAILURE, $commandTester->getStatusCode());
+    expect($commandTester->getStatusCode())->toBe(Command::FAILURE)
+        ->and($output)->toContain('Restore original documents executed with errors!')
+        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
 
-        // test output
-        $output = $commandTester->getDisplay(true);
-        $this->assertStringContainsString('Restore original documents executed with errors!', $output);
+    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
-        $this->assertFileExists("{$this->getRoot()->url()}/pdf-compressor.log");
-        $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
-
-        for ($i = 0; $i < 5; $i++) {
-            $this->assertFileExists("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF");
-            $this->assertFileExists("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF");
-            $this->assertStringContainsString(
+    for ($i = 0; $i < 5; $i++) {
+        expect("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF")->toBeFile()
+            ->and("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and($logContent)->toContain(
                 "ERROR: phootwork\\file\\exception\\FileException: Failed to move vfs://root/docs" .
-                DIRECTORY_SEPARATOR .
-                "Original_pratica_collaudata_$i.PDF to vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF",
-                $logContent
+            DIRECTORY_SEPARATOR .
+            "Original_pratica_collaudata_$i.PDF to vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF"
             );
-        }
     }
-}
+});

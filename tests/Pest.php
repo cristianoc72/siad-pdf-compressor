@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use cristianoc72\PdfCompressor\Tests\Traits\Container;
 use cristianoc72\PdfCompressor\Tests\Traits\Vfs;
@@ -33,5 +33,5 @@ uses(Vfs::class, Container::class)->in('Feature');
 
 //function something()
 //{
-    // ..
+// ..
 //}
