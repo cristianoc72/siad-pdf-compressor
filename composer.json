@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.2",
         "symfony/finder": "^7",
         "symfony/dotenv": "^7",
         "symfony/console": "^7",
@@ -43,7 +43,7 @@
             "@analytics",
             "@cs-fix"
         ],
-        "coverage": "@test coverage",
+        "coverage": "@test --coverage",
         "coverage:html": "@test --coverage-html coverage/",
         "coverage:clover": "@test --coverage-clover clover.xml",
         "coverage:type": "@test --type-coverage",

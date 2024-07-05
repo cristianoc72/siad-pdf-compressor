@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-use cristianoc72\PdfCompressor\Tests\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -35,9 +34,9 @@ Your log file path is: vfs://root/pdf-compressor.log
     $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF")->toBeFile()
-            ->and(filesize("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF"))->toBe(307200)
-            ->and($logContent)->toContain("INFO: Reverted `vfs://root/docs" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF` into `vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF`")
+        expect("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and(filesize("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF"))->toBe(307200)
+            ->and($logContent)->toContain("INFO: Reverted `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF` into `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF`")
         ;
     }
 });
@@ -76,12 +75,12 @@ it("reverts not writeable files", function () {
     $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/Original_pratica_collaudata_$i.PDF")->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF")->toBeFile()
+        expect("{$this->getRoot()->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->toBeFile()
+            ->and("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
             ->and($logContent)->toContain(
-                "ERROR: phootwork\\file\\exception\\FileException: Failed to move vfs://root/docs" .
+                "ERROR: phootwork\\file\\exception\\FileException: Failed to move vfs://root/docs/2024" .
             DIRECTORY_SEPARATOR .
-            "Original_pratica_collaudata_$i.PDF to vfs://root/docs" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF"
+            "Original_pratica_collaudata_$i.PDF to vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF"
             );
     }
 });

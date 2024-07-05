@@ -36,7 +36,7 @@ trait Vfs
             "
 PUBLIC_KEY=public_key
 PRIVATE_KEY=private_key
-DOCS_DIR=" . vfsStream::url('root/docs') . "
+DOCS_DIR=" . vfsStream::url('root/docs/2024') . "
 LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log 
 "
         );
@@ -46,17 +46,19 @@ LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log
     {
         $this->createDotEnv();
         $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('2024')->at($docsDir);
 
         for ($i = 0; $i < 5; $i++) {
             $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
-                ->at($docsDir)->withContent(LargeFileContent::withKilobytes(300))
+                ->at($dir)->withContent(LargeFileContent::withKilobytes(300))
             ;
         }
     }
 
     protected function populateWithOneNotReadableFile(): void
     {
-        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $docsDir = vfsStream::newDirectory('2024')->at($dir);
         $this->createDotEnv();
 
         for ($i = 0; $i < 4; $i++) {
@@ -72,7 +74,8 @@ LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log
 
     protected function populateWithUnreadableEnvFile(): void
     {
-        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $docsDir = vfsStream::newDirectory('2024')->at($dir);
         $dotEnv = $this->createDotEnv();
         $dotEnv->chmod(000);
 
@@ -85,7 +88,8 @@ LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log
 
     protected function populateWithNotWriteableEnvFile(): void
     {
-        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $docsDir = vfsStream::newDirectory('2024')->at($dir);
         $dotEnv = $this->createDotEnv();
         $dotEnv->chmod(0400);
 
@@ -99,21 +103,23 @@ LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log
     protected function populateFilesToRestore(): void
     {
         $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('2024')->at($docsDir);
         $this->createDotEnv();
 
         for ($i = 0; $i < 5; $i++) {
             vfsStream::newFile("Original_pratica_collaudata_$i.PDF")
-                ->at($docsDir)->withContent(LargeFileContent::withKilobytes(300));
+                ->at($dir)->withContent(LargeFileContent::withKilobytes(300));
             ;
             vfsStream::newFile("PraticaCollaudata_$i.PDF")
-                ->at($docsDir)->setContent("Compressed PraticaCollaudata_$i.PDF")
+                ->at($dir)->setContent("Compressed PraticaCollaudata_$i.PDF")
             ;
         }
     }
 
     protected function populateNotWriteableFilesToRestore(): void
     {
-        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $docsDir = vfsStream::newDirectory('2024')->at($dir);
         $this->createDotEnv();
 
         for ($i = 0; $i < 5; $i++) {
@@ -129,5 +135,25 @@ LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log
         }
 
         $docsDir->chmod(0400);
+    }
+
+    protected function populateWithPreviousYear(): void
+    {
+        $this->createDotEnv();
+        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir1 = vfsStream::newDirectory('2024')->at($docsDir);
+        $dir2 = vfsStream::newDirectory('2023')->at($docsDir);
+
+        for ($i = 0; $i < 5; $i++) {
+            $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
+                ->at($dir1)->withContent(LargeFileContent::withKilobytes(300))
+            ;
+        }
+
+        for ($i = 5; $i < 10; $i++) {
+            $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
+                ->at($dir2)->withContent(LargeFileContent::withKilobytes(300))
+            ;
+        }
     }
 }

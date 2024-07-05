@@ -26,6 +26,6 @@ jobs:
         with:
           composer-options: "--prefer-dist --optimize-autoloader"
       - name: Check code style
-        run: composer cs
+        run: composer cs:check
       - name: Test with Pest
         run: composer test

@@ -32,8 +32,8 @@ The "vfs://root/my/awesome/dir" directory does not exist.
 ')->and("{$this->getRoot()->url()}/pdf-compressor.log")->not->toBeFile();
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/PraticaCollaudata_$i.PDF")->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/Original_PraticaCollaudata_$i.PDF")->not->toBeFile();
+        expect("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and("{$this->getRoot()->url()}/docs/2024/Original_PraticaCollaudata_$i.PDF")->not->toBeFile();
     }
 
     expect($container->get('configuration')->getPublicKey())->toBe('my_public_key')
