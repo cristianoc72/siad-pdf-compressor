@@ -1,6 +1,7 @@
 # Siad PDF Compressor #
 
 ![Tests](https://github.com/cristianoc72/siad-pdf-compressor/workflows/Tests/badge.svg)
+![Build](https://github.com/cristianoc72/siad-pdf-compressor/workflows/Build/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/aeac6a5195ec9a8099ee/maintainability)](https://codeclimate.com/github/cristianoc72/siad-pdf-compressor/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/aeac6a5195ec9a8099ee/test_coverage)](https://codeclimate.com/github/cristianoc72/siad-pdf-compressor/test_coverage)
 ![GitHub](https://img.shields.io/github/license/cristianoc72/siad-pdf-compressor)
@@ -67,8 +68,8 @@ Fork the repository and submit a pull request.
 
 This project follows the [Susina coding standard](https://github.com/susina/coding-standard) and provides some composer scripts to help our contributors:
 
-1.  `composer cs` to check the conding standard
-2.  `composer cs-fix` to fix the coding standard
+1.  `composer cs:check` to check the conding standard
+2.  `composer cs:fix` to fix the coding standard
 3.  `composer test` to run the test suite
 4.  `composer analytics` to run [Psalm](https://psalm.dev/) our static analysis tool
 5.  `composer check` to run all the previous scripts
