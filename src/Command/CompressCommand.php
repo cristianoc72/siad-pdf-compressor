@@ -120,7 +120,7 @@ Please, see the log file for further information.
         }
 
         $this->finder->name('PraticaCo*.PDF')->name('PraticaCo*.pdf')
-            ->size('> 200k')
+            ->size('> 299k')
             ->files();
     }
 
