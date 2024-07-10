@@ -1,0 +1,20 @@
+site_name: Siad Pdf Compressor
+theme:
+  name: material
+  highlightjs: true
+  palette:
+    primary: 'deep purple'
+    accent: 'deep purple'
+copyright: "Siad Pdf Compressor is licensed under <a href='https://github.com/susina/psr2-code-generator/blob/master/LICENSE'>Apache2 license</a>"
+repo_name: 'cristianc72/siad-pdf-compressor/'
+repo_url: 'https://github.com/cristianoc72/siad-pdf-compressor'
+markdown_extensions:
+  - admonition
+  - codehilite
+nav:
+  - Home: index.md
+  - Documentazione:
+    - Installazione: installation.md
+    - Guida all'uso: user_guide.md
+  - Contribuire: contributing.md
+  - Licenza: license.md
