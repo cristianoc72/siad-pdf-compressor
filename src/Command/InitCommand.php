@@ -113,7 +113,7 @@ class InitCommand extends Command
 
     private function populatePreInvoice(InputInterface $input, OutputInterface $output): void
     {
-        $preInvoiceQuestion = new ConfirmationQuestion('Do you want to disable the creation of the copies of the files, to use in pre-invoices?',false, '/^(y|s)/i');
+        $preInvoiceQuestion = new ConfirmationQuestion('Do you want to disable the creation of the copies of the files, to use in pre-invoices?', false, '/^(y|s)/i');
         $this->configuration->setDisablePreInvoice($this->helper->ask($input, $output, $preInvoiceQuestion));
     }
 }

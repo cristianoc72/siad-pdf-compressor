@@ -72,7 +72,7 @@ Your log file path is: vfs://root/pdf-compressor.log
         ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024" .DIRECTORY_SEPARATOR . "E_$i" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
+        expect("{$this->getRoot()->url()}/docs/2024" . DIRECTORY_SEPARATOR . "E_$i" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
             ->and("{$this->getRoot()->url()}/docs/2024/E_$i" . DIRECTORY_SEPARATOR . "E_$i.PDF")->toBeFile();
     }
 });
