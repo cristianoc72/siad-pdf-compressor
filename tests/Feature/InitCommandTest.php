@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-use cristianoc72\PdfCompressor\Tests\TestCase;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -25,7 +24,8 @@ it("create a configuration file", function () {
         vfsStream::url('root/docs'),
         'ilovepdf_public_key',
         'ilovepdf_private_key',
-        '/home/pdf-compressor.log'
+        '/home/pdf-compressor.log',
+        'Y'
     ]);
 
     $commandTester->execute([]);
@@ -43,6 +43,7 @@ If you want to change it, please run `init` command again.
             ->toContain("PRIVATE_KEY=ilovepdf_private_key")
             ->toContain("PUBLIC_KEY=ilovepdf_public_key")
             ->toContain("LOG_FILE=/home/pdf-compressor.log")
+            ->toContain("DISABLE_PREINVOICE=true")
     ;
 });
 
@@ -58,7 +59,8 @@ it("display an errormessage if the document directory doesn't exist", function (
         vfsStream::url('root/wrongPath'),
         vfsStream::url('root/docs'),
         'ilovepdf_public_key',
-        'ilovepdf_private_key'
+        'ilovepdf_private_key',
+        'N'
     ]);
     $commandTester->execute([]);
 
@@ -77,7 +79,7 @@ it("throws an exception if the configuration file is not readable", function () 
     $commandTester->setInputs([
         vfsStream::url('root/docs'),
         'ilovepdf_public_key',
-        'ilovepdf_private_key'
+        'ilovepdf_private_key',
     ]);
     $commandTester->execute([]);
 })->throws(PathException::class, 'Unable to read the "vfs://root/.env" environment file.');

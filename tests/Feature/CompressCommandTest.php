@@ -48,6 +48,35 @@ Your log file path is: vfs://root/pdf-compressor.log
     }
 });
 
+it("compresses the PDF files, adding pre-invoices files", function () {
+    $this->populateForPreInvoice();
+    $container = $this->getContainer();
+
+    $app = $container->get('app');
+    $command = $app->find('compress');
+    $commandTester = new CommandTester($command);
+    $commandTester->execute([
+        '--log-file' => vfsStream::url('root/pdf-compressor.log')
+    ]);
+
+    // test output
+    $expectedOutput = "
+Compression successfully executed!
+Please, see the log file for further information.
+
+Your log file path is: vfs://root/pdf-compressor.log
+";
+    $output = $commandTester->getDisplay(true);
+    expect($output)->toContain($expectedOutput)
+        ->and($commandTester->getStatusCode())->toBe(Command::SUCCESS)
+        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+
+    for ($i = 0; $i < 5; $i++) {
+        expect("{$this->getRoot()->url()}/docs/2024" .DIRECTORY_SEPARATOR . "E_$i" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
+            ->and("{$this->getRoot()->url()}/docs/2024/E_$i" . DIRECTORY_SEPARATOR . "E_$i.PDF")->toBeFile();
+    }
+});
+
 it("try to compress not readable files", function () {
     $this->populateWithOneNotReadableFile();
 
@@ -79,10 +108,10 @@ Your log file path is: vfs://root/pdf-compressor.log
             ->and($logContent)->toContain("INFO: `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed.");
     }
 
-    expect($logContent)->toContain("ERROR: phootwork\\file\\exception\\FileException: Failed to copy vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_5.PDF to vfs://root/docs/2024/Original_pratica_collaudata_5.PDF")
+    expect($logContent)->toContain("ERROR: phootwork\\file\\exception\\FileException: Failed to copy vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_5.PDF to vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_5.PDF")
         ->and("vfs://root/docs/2024/Original_pratica_collaudata_5.PDF")->not->toBeFile()
         ->and("vfs://root/docs/2024/PraticaCollaudata_5.PDF")->toBeFile();
-})->skipOnWindows();
+});
 
 it("stops with a failure when authentication error", function () {
     $this->populateFilesystem();

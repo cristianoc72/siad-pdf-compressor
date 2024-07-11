@@ -20,6 +20,7 @@ class Configuration
     private string $privateKey = '';
     private string $fileName = '';
     private string $logFile = '';
+    private bool $disablePreInvoice = false;
 
     public function __construct(string $path = null)
     {
@@ -33,6 +34,7 @@ class Configuration
         $this->privateKey = (string) $_ENV['PRIVATE_KEY'];
         $this->publicKey = (string) $_ENV['PUBLIC_KEY'];
         $this->logFile = (string) $_ENV['LOG_FILE'];
+        $this->disablePreInvoice = (string) $_ENV['DISABLE_PREINVOICE'] === 'true' ? true : false;
     }
 
     public function getDocsDir(): string
@@ -75,6 +77,16 @@ class Configuration
         $this->logFile = $logFile;
     }
 
+    public function isDisablePreInvoice(): bool
+    {
+        return $this->disablePreInvoice;
+    }
+
+    public function setDisablePreInvoice(bool $value): void
+    {
+        $this->disablePreInvoice = $value;
+    }
+
     /**
      * @throws FileException If something went wrong in reading template and writing `.env` file
      */
@@ -83,8 +95,8 @@ class Configuration
         $tplFile = new File(__DIR__ . '/../resources/templates/.env.mustache');
         $content = $tplFile->read()
             ->replace(
-                ['{{ docsDir }}', '{{ privateKey }}', '{{ publicKey }}', '{{ logFile }}'],
-                [$this->docsDir, $this->privateKey, $this->publicKey, $this->logFile]
+                ['{{ docsDir }}', '{{ privateKey }}', '{{ publicKey }}', '{{ logFile }}', '{{ disablePreInvoice }}'],
+                [$this->docsDir, $this->privateKey, $this->publicKey, $this->logFile, $this->disablePreInvoice ? 'true' : 'false']
             );
         $file = new File($this->fileName);
         if (!$file->isWritable()) {

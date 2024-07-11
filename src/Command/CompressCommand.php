@@ -67,6 +67,7 @@ class CompressCommand extends BaseCommand
                     $file = new File($fileInfo->getPathname());
                     $backupFile = $this->backupFile($file);
                     $this->compressFile($file);
+                    $this->addPreInvoiceFile($file);
 
                     $progress->advance();
                 } catch (FileException $fileException) {
@@ -167,5 +168,19 @@ Please, see the log file for further information.
         $this->logger->info("Backup `{$file->getPathname()}` into `{$backupFile->getPathname()}`.");
 
         return $backupFile;
+    }
+
+    private function addPreInvoiceFile(File $file): void
+    {
+        if (!$this->configuration->isDisablePreInvoice()) {
+            $dir = $file->getDirname();
+            $destinationFile = new File(
+                $dir->ensureEnd(DIRECTORY_SEPARATOR)
+                    ->append($dir->substring($dir->lastIndexOf(DIRECTORY_SEPARATOR) + 1))
+                    ->append('.PDF')
+            );
+
+            $file->copy($destinationFile->toPath());
+        }
     }
 }

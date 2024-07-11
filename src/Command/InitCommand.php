@@ -17,6 +17,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 #[AsCommand(name: 'init')]
@@ -53,6 +54,7 @@ class InitCommand extends Command
         $this->populatePublicKey($input, $output);
         $this->populatePrivateKey($input, $output);
         $this->populateLogFile($input, $output);
+        $this->populatePreInvoice($input, $output);
 
         try {
             $this->configuration->saveConfiguration();
@@ -107,5 +109,11 @@ class InitCommand extends Command
             $this->configuration->getDocsDir() . '/pdf-compressor.log'
         );
         $this->configuration->setLogFile((string) $this->helper->ask($input, $output, $logFileQuestion));
+    }
+
+    private function populatePreInvoice(InputInterface $input, OutputInterface $output): void
+    {
+        $preInvoiceQuestion = new ConfirmationQuestion('Do you want to disable the creation of the copies of the files, to use in pre-invoices?',false, '/^(y|s)/i');
+        $this->configuration->setDisablePreInvoice($this->helper->ask($input, $output, $preInvoiceQuestion));
     }
 }
