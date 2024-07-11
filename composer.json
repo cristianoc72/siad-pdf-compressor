@@ -41,7 +41,8 @@
         "check": [
             "@test",
             "@analytics",
-            "@cs:fix"
+            "@cs:fix",
+            "echo 'Do you remember to update version number?'"
         ],
         "coverage": "@test --coverage",
         "coverage:html": "@test --coverage-html coverage/",
