@@ -61,7 +61,6 @@ class CompressCommand extends BaseCommand
             $progress = new ProgressBar($output, $this->finder->count());
             $progress->start();
 
-            /** @var SplFileInfo $fileInfo */
             foreach ($this->finder as $fileInfo) {
                 try {
                     $file = new File($fileInfo->getPathname());
@@ -176,7 +175,7 @@ Please, see the log file for further information.
             $dir = $file->getDirname();
             $destinationFile = new File(
                 $dir->ensureEnd(DIRECTORY_SEPARATOR)
-                    ->append($dir->substring($dir->lastIndexOf(DIRECTORY_SEPARATOR) + 1))
+                    ->append($dir->substring(($dir->lastIndexOf(DIRECTORY_SEPARATOR) ?? -1) + 1))
                     ->append('.PDF')
             );
 

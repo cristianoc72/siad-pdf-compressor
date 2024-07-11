@@ -29,7 +29,7 @@ class Container extends ContainerBuilder
     {
         parent::__construct($parameterBag);
 
-        $home = $home === '' ? (string) $_SERVER['HOME'] : $home;
+        $home = $home !== '' ? $home : ($_SERVER['HOME'] ?? Configuration::DEFAULT_DIR);
 
         // Services
         $this->addConfiguration($home);
@@ -58,13 +58,13 @@ class Container extends ContainerBuilder
 
     /**
      * @throws Exception
-     *
-     * @psalm-suppress  MixedMethodCall $this->get('configuration')?->getLogFile() returns a string
      */
     private function addLogger(): void
     {
+        /** @var Configuration $config */
+        $config = $this->get('configuration');
         $this->register('streamHandler', StreamHandler::class)
-            ->addArgument($this->get('configuration')?->getLogFile())
+            ->addArgument($config->getLogFile())
         ;
         $this->register('logger', Logger::class)
             ->addArgument('Siad Pdf Compressor')

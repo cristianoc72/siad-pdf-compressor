@@ -41,7 +41,7 @@
         "check": [
             "@test",
             "@analytics",
-            "@cs-fix"
+            "@cs:fix"
         ],
         "coverage": "@test --coverage",
         "coverage:html": "@test --coverage-html coverage/",

@@ -15,6 +15,8 @@ use Symfony\Component\Dotenv\Dotenv;
 
 class Configuration
 {
+    public const DEFAULT_DIR = "C:\\siad";
+
     private string $docsDir;
     private string $publicKey = '';
     private string $privateKey = '';
@@ -24,17 +26,17 @@ class Configuration
 
     public function __construct(string $path = null)
     {
-        $path = $path ?? (string) $_SERVER['HOME'];
+        $path = $path ?? ($_SERVER['HOME'] ?? self::DEFAULT_DIR);
         $this->fileName = "$path/.env";
 
         $dotEnv = new Dotenv();
         $dotEnv->load($this->fileName);
 
-        $this->docsDir = (string) $_ENV['DOCS_DIR'];
-        $this->privateKey = (string) $_ENV['PRIVATE_KEY'];
-        $this->publicKey = (string) $_ENV['PUBLIC_KEY'];
-        $this->logFile = (string) $_ENV['LOG_FILE'];
-        $this->disablePreInvoice = (string) $_ENV['DISABLE_PREINVOICE'] === 'true' ? true : false;
+        $this->docsDir = $_ENV['DOCS_DIR'];
+        $this->privateKey = $_ENV['PRIVATE_KEY'];
+        $this->publicKey = $_ENV['PUBLIC_KEY'];
+        $this->logFile = $_ENV['LOG_FILE'];
+        $this->disablePreInvoice = $_ENV['DISABLE_PREINVOICE'] === 'true' ? true : false;
     }
 
     public function getDocsDir(): string

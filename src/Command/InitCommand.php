@@ -76,7 +76,7 @@ class InitCommand extends Command
                 'Please enter the name of the directory containing the documents to compress',
                 'C:\\siad'
             );
-            $this->configuration->setDocsDir((string) $this->helper->ask($input, $output, $docDirQuestion));
+            $this->configuration->setDocsDir((string) $this->helper?->ask($input, $output, $docDirQuestion));
             $dir = new Directory($this->configuration->getDocsDir());
             if (!$dir->exists()) {
                 $output->writeln("<error>Error! The document directory does not exists.</error>");
@@ -90,7 +90,7 @@ class InitCommand extends Command
             'Please enter the iLovePdf public key (you can leave this blank and manually insert it when running `compress` command)',
             ''
         );
-        $this->configuration->setPublicKey((string) $this->helper->ask($input, $output, $publicKeyQuestion));
+        $this->configuration->setPublicKey((string) $this->helper?->ask($input, $output, $publicKeyQuestion));
     }
 
     private function populatePrivateKey(InputInterface $input, OutputInterface $output): void
@@ -99,7 +99,7 @@ class InitCommand extends Command
             'Please enter the iLovePdf private key (you can leave this blank and manually insert it when running `compress` command)',
             ''
         );
-        $this->configuration->setPrivateKey((string) $this->helper->ask($input, $output, $privateKeyQuestion));
+        $this->configuration->setPrivateKey((string) $this->helper?->ask($input, $output, $privateKeyQuestion));
     }
 
     private function populateLogFile(InputInterface $input, OutputInterface $output): void
@@ -108,12 +108,12 @@ class InitCommand extends Command
             'Please enter the path for your log file',
             $this->configuration->getDocsDir() . '/pdf-compressor.log'
         );
-        $this->configuration->setLogFile((string) $this->helper->ask($input, $output, $logFileQuestion));
+        $this->configuration->setLogFile((string) $this->helper?->ask($input, $output, $logFileQuestion));
     }
 
     private function populatePreInvoice(InputInterface $input, OutputInterface $output): void
     {
         $preInvoiceQuestion = new ConfirmationQuestion('Do you want to disable the creation of the copies of the files, to use in pre-invoices?', false, '/^(y|s)/i');
-        $this->configuration->setDisablePreInvoice($this->helper->ask($input, $output, $preInvoiceQuestion));
+        $this->configuration->setDisablePreInvoice((bool) $this->helper?->ask($input, $output, $preInvoiceQuestion));
     }
 }
