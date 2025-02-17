@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * Copyright (c) 2020 - 2024 Cristiano Cinotti
+ * Copyright (c) 2021 - 2025 Cristiano Cinotti
  *
  * This file is part of siad-pdf-compressor package.
  * For the full copyright and license information, please view the LICENSE
@@ -53,6 +53,9 @@ DISABLE_PREINVOICE=true
         for ($i = 0; $i < 5; $i++) {
             $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
                 ->at($dir)->withContent(LargeFileContent::withKilobytes(300))
+            ;
+            $conf = vfsStream::newFile("ConformitaFirmata_$i.PDF")
+                ->at($dir)->withContent(LargeFileContent::withKilobytes(100))
             ;
         }
     }

@@ -12,7 +12,7 @@ jobs:
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: 8.3
           extensions: json
           coverage: pcov
       - name: Install composer dependencies
@@ -20,7 +20,7 @@ jobs:
         with:
           composer-options: "--prefer-dist --optimize-autoloader"
       - name: CodeClimate coverage report
-        uses: paambaati/codeclimate-action@v8.0.0
+        uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:

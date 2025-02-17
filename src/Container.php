@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * Copyright (c) 2020 - 2024 Cristiano Cinotti
+ * Copyright (c) 2021 - 2025 Cristiano Cinotti
  *
  * This file is part of siad-pdf-compressor package.
  * For the full copyright and license information, please view the LICENSE
@@ -25,7 +25,7 @@ use Symfony\Component\Finder\Finder;
 
 class Container extends ContainerBuilder
 {
-    public function __construct(string $home = '', ParameterBagInterface $parameterBag = null)
+    public function __construct(string $home = '', ?ParameterBagInterface $parameterBag = null)
     {
         parent::__construct($parameterBag);
 

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /*
- * Copyright (c) Cristiano Cinotti 2021.
+ * Copyright (c) 2021 - 2025 Cristiano Cinotti.
  *
  * This file is part of siad-pdf-compressor package, release under the APACHE-2 license.
  * For the full copyright and license information, please view the LICENSE
@@ -12,6 +12,7 @@ namespace cristianoc72\PdfCompressor\Command;
 use cristianoc72\PdfCompressor\Configuration;
 use Exception;
 use Ilovepdf\CompressTask;
+use Ilovepdf\MergeTask;
 use Ilovepdf\Exceptions\AuthException;
 use Ilovepdf\Exceptions\PathException;
 use Ilovepdf\Exceptions\ProcessException;
@@ -20,6 +21,7 @@ use Ilovepdf\Ilovepdf;
 use Monolog\Logger;
 use phootwork\file\exception\FileException;
 use phootwork\file\File;
+use phootwork\lang\ArrayObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -27,7 +29,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 
 #[AsCommand(name: 'compress')]
 class CompressCommand extends BaseCommand
@@ -64,6 +65,7 @@ class CompressCommand extends BaseCommand
             foreach ($this->finder as $fileInfo) {
                 try {
                     $file = new File($fileInfo->getPathname());
+                    $this->mergeConformita($file);
                     $backupFile = $this->backupFile($file);
                     $this->compressFile($file);
                     $this->addPreInvoiceFile($file);
@@ -122,6 +124,37 @@ Please, see the log file for further information.
         $this->finder->name('PraticaCo*.PDF')->name('PraticaCo*.pdf')
             ->size('> 299k')
             ->files();
+    }
+
+    /**
+     * Merge `ParticaCo*.PDF` with `ConformitaFirmata*.PDF`.
+     *
+     * @throws UploadException
+     * @throws PathException
+     * @throws AuthException
+     * @throws ProcessException
+     * @throws Exception
+     */
+    private function mergeConformita(File $file): void
+    {
+        $confFinder = new Finder();
+        $confFinder->in($file->getDirname()->toString())->name('ConformitaFirmata*.PDF')->name('ConformitaFirmata*.pdf')->files();
+        if ($confFinder->count() > 0) {
+            /** @var MergeTask $task */
+            $task = $this->iLovePdf->newTask('merge');
+            $task->addFile($file->getPathname()->toString());
+            $task->setOutputFilename($file->getFilename()->toString());
+            $filesMerged = new ArrayObject();
+            foreach ($confFinder as $fileInfo) {
+                $task->addFile($fileInfo->getPathname());
+                $filesMerged->add($file->getFilename());
+            }
+
+            $task->execute();
+            $task->download($file->getDirname()->toString());
+
+            $this->logger->info(" Merged `{$filesMerged->join(', ')->toString()}` into `{$file->getPathname()}`.");
+        }
     }
 
     /**

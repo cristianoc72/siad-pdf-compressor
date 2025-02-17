@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /*
- * Copyright (c) Cristiano Cinotti 2021.
+ * Copyright (c) 2021 - 2025 Cristiano Cinotti
  *
  * This file is part of siad-pdf-compressor package, release under the APACHE-2 license.
  * For the full copyright and license information, please view the LICENSE

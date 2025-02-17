@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /*
- * Copyright (c) Cristiano Cinotti 2021.
+ * Copyright (c) 2021 - 2025 Cristiano Cinotti
  *
  * This file is part of siad-pdf-compressor package, release under the APACHE-2 license.
  * For the full copyright and license information, please view the LICENSE
@@ -140,8 +140,7 @@ Your log file path is: vfs://root/pdf-compressor.log
 
     for ($i = 0; $i < 5; $i++) {
         expect("{$this->getRoot()->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
-            ->and($logContent)->toContain("INFO: Remove backup file `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF");
+            ->and("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile();
     }
 
     expect($logContent)->toContain("ERROR: Ilovepdf\Exceptions\AuthException: Invalid credentials");
