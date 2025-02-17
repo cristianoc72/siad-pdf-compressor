@@ -65,8 +65,8 @@ class CompressCommand extends BaseCommand
             foreach ($this->finder as $fileInfo) {
                 try {
                     $file = new File($fileInfo->getPathname());
-                    $this->mergeConformita($file);
                     $backupFile = $this->backupFile($file);
+                    $this->mergeConformita($file);
                     $this->compressFile($file);
                     $this->addPreInvoiceFile($file);
 
