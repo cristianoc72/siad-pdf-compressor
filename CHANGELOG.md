@@ -4,7 +4,13 @@ All notable changes to `cristianoc72/siad-pdf-compressor` project will be docume
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0] - Unreleased
+## [1.1] - 2024-07-11
+### Changed
+- Fix issue #1 Move the size limit of compressed files to 290kb.
+- 
+
+
+## [1.0] - 2024-07-11
 ### Added
 - Add a GitHub actions workflow, to automatically build the phar archive and deploy it in release assets.
 - Add the version number, to display at command line, when command is run with `--version` option.

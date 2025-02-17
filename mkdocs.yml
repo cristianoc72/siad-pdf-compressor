@@ -15,6 +15,7 @@ nav:
   - Home: index.md
   - Documentazione:
     - Installazione: installation.md
-    - Guida all'uso: user_guide.md
+    - "Guida all'uso": user_guide.md
   - Contribuire: contributing.md
   - Licenza: license.md
+  

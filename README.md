@@ -57,6 +57,7 @@ php pdf-compressor.phar revert
 ## Documentation
 
 See our official [documentation site](https://cristianoc72.github.io/siad-pdf-compressor) (coming soon).
+
 ## Issues
 
 If you find a bug or you have a suggestion, please open an issue on our [issue tracker](https://github.com/cristianoc72/siad-pdf-compressor/issues).
