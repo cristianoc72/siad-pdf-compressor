@@ -54,6 +54,9 @@ DISABLE_PREINVOICE=true
             $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
                 ->at($dir)->withContent(LargeFileContent::withKilobytes(300))
             ;
+            $conf = vfsStream::newFile("ConformitaFirmata_$i.PDF")
+                ->at($dir)->withContent(LargeFileContent::withKilobytes(100))
+            ;
         }
     }
 

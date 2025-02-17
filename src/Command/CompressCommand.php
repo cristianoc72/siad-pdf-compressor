@@ -128,7 +128,7 @@ Please, see the log file for further information.
 
     /**
      * Merge `ParticaCo*.PDF` with `ConformitaFirmata*.PDF`.
-     * 
+     *
      * @throws UploadException
      * @throws PathException
      * @throws AuthException
@@ -139,13 +139,13 @@ Please, see the log file for further information.
     {
         $confFinder = new Finder();
         $confFinder->in($file->getDirname()->toString())->name('ConformitaFirmata*.PDF')->name('ConformitaFirmata*.pdf')->files();
-        if ($confFinder->count() >0) {
+        if ($confFinder->count() > 0) {
             /** @var MergeTask $task */
             $task = $this->iLovePdf->newTask('merge');
             $task->addFile($file->getPathname()->toString());
             $task->setOutputFilename($file->getFilename()->toString());
             $filesMerged = new ArrayObject();
-            foreach($confFinder as $fileInfo) {
+            foreach ($confFinder as $fileInfo) {
                 $task->addFile($fileInfo->getPathname());
                 $filesMerged->add($file->getFilename());
             }

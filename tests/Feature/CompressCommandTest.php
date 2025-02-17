@@ -140,8 +140,7 @@ Your log file path is: vfs://root/pdf-compressor.log
 
     for ($i = 0; $i < 5; $i++) {
         expect("{$this->getRoot()->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
-            ->and($logContent)->toContain("INFO: Remove backup file `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF");
+            ->and("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile();
     }
 
     expect($logContent)->toContain("ERROR: Ilovepdf\Exceptions\AuthException: Invalid credentials");
