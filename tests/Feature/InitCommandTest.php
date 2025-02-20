@@ -12,7 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Dotenv\Exception\PathException;
 
-it("create a configuration file", function () {
+it("creates a configuration file", function () {
     $this->populateFilesystem();
     $container = $this->getContainer();
 

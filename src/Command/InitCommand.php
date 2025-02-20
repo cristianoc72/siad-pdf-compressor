@@ -74,7 +74,8 @@ class InitCommand extends Command
         do {
             $docDirQuestion = new Question(
                 'Please enter the name of the directory containing the documents to compress',
-                'C:\\siad'
+                'C:\\siad',
+                $this->configuration->getDocsDir()
             );
             $this->configuration->setDocsDir((string) $this->helper?->ask($input, $output, $docDirQuestion));
             $dir = new Directory($this->configuration->getDocsDir());
@@ -88,7 +89,7 @@ class InitCommand extends Command
     {
         $publicKeyQuestion = new Question(
             'Please enter the iLovePdf public key (you can leave this blank and manually insert it when running `compress` command)',
-            ''
+            $this->configuration->getPublicKey()
         );
         $this->configuration->setPublicKey((string) $this->helper?->ask($input, $output, $publicKeyQuestion));
     }
@@ -97,7 +98,7 @@ class InitCommand extends Command
     {
         $privateKeyQuestion = new Question(
             'Please enter the iLovePdf private key (you can leave this blank and manually insert it when running `compress` command)',
-            ''
+            $this->configuration->getPrivateKey()
         );
         $this->configuration->setPrivateKey((string) $this->helper?->ask($input, $output, $privateKeyQuestion));
     }
