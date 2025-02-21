@@ -15,6 +15,7 @@ use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
+use org\bovigo\vfs\visitor\vfsStreamPrintVisitor;
 use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 
 trait Vfs
@@ -140,6 +141,33 @@ DISABLE_PREINVOICE=false
             ;
             vfsStream::newFile("PraticaCollaudata_$i.PDF")
                 ->at($dir)->setContent("Compressed PraticaCollaudata_$i.PDF")
+            ;
+        }
+    }
+
+    protected function populateFilesToRestoreInDifferentDirs(): void
+    {
+        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('2024')->at($docsDir);
+        $givenDir = vfsStream::newDirectory('E_given')->at($dir);
+        $notGivenDir = vfsStream::newDirectory('E_notgiven')->at($dir);
+        $this->createDotEnv();
+
+        for ($i = 0; $i < 3; $i++) {
+            vfsStream::newFile("Original_pratica_collaudata_$i.PDF")
+                ->at($givenDir)->withContent(LargeFileContent::withKilobytes(300));
+            ;
+            vfsStream::newFile("PraticaCollaudata_$i.PDF")
+                ->at($givenDir)->setContent("Compressed PraticaCollaudata_$i.PDF")
+            ;
+        }
+
+        for ($i = 3; $i < 6; $i++) {
+            vfsStream::newFile("Original_pratica_collaudata_$i.PDF")
+                ->at($notGivenDir)->withContent(LargeFileContent::withKilobytes(300));
+            ;
+            vfsStream::newFile("PraticaCollaudata_$i.PDF")
+                ->at($notGivenDir)->setContent("Compressed PraticaCollaudata_$i.PDF")
             ;
         }
     }

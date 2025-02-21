@@ -10,7 +10,7 @@
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
-it("reverts a compression", function () {
+it("reverts compressed files", function () {
     $this->populateFilesToRestore();
     $container = $this->getContainer();
 
@@ -35,8 +35,50 @@ Your log file path is: vfs://root/pdf-compressor.log
 
     for ($i = 0; $i < 5; $i++) {
         expect("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and("{$this->getRoot()->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not()->toBeFile()
             ->and(filesize("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF"))->toBe(307200)
             ->and($logContent)->toContain("INFO: Reverted `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF` into `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF`")
+        ;
+    }
+});
+
+it("reverts compressed files in a given directory", function () {
+    $this->populateFilesToRestoreInDifferentDirs();
+    $container = $this->getContainer();
+
+    $app = $container->get('app');
+    $command = $app->find('revert');
+
+    $commandTester = new CommandTester($command);
+    $commandTester->execute(['dirs' => ['E_given']]);
+
+    $expectedOutput = '3 original documents successfully restored.
+Please, see the log file for further information.
+
+Your log file path is: vfs://root/pdf-compressor.log
+';
+    $output = $commandTester->getDisplay(true);
+
+    expect($commandTester->getStatusCode())->toBe(Command::SUCCESS)
+        ->and($output)->toContain($expectedOutput)
+        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+
+    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+
+    for ($i = 0; $i < 3; $i++) {
+        expect("{$this->getRoot()->url()}/docs/2024/E_given/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and(filesize("{$this->getRoot()->url()}/docs/2024/E_given/PraticaCollaudata_$i.PDF"))->toBe(307200)
+            ->and("{$this->getRoot()->url()}/docs/2024/E_given/Original_pratica_collaudata_$i.PDF")->not()->toBeFile()
+            ->and($logContent)->toContain("INFO: Reverted `vfs://root/docs/2024/E_given" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF` into `vfs://root/docs/2024/E_given" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF`")
+        ;
+    }
+
+    for ($i = 3; $i < 6; $i++) {
+        expect("{$this->getRoot()->url()}/docs/2024/E_notgiven/Original_pratica_collaudata_$i.PDF")->toBeFile()
+            ->and(filesize("{$this->getRoot()->url()}/docs/2024/E_notgiven/Original_pratica_collaudata_$i.PDF"))->toBe(307200)
+            ->and("{$this->getRoot()->url()}/docs/2024/E_notgiven/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and(file_get_contents("{$this->getRoot()->url()}/docs/2024/E_notgiven/PraticaCollaudata_$i.PDF"))
+                ->toBe("Compressed PraticaCollaudata_$i.PDF")
         ;
     }
 });

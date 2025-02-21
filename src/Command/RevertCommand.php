@@ -14,11 +14,13 @@ namespace cristianoc72\PdfCompressor\Command;
 use Exception;
 use phootwork\file\exception\FileException;
 use phootwork\file\File;
+use phootwork\file\Path;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -32,17 +34,30 @@ class RevertCommand extends BaseCommand
     {
         $this
             ->setDescription("Revert the compressed documents to the original state.")
+            ->addArgument('dirs', InputArgument::IS_ARRAY, 'The directories where the documents to revert reside (separate multiple directories with a space).')
             ->addOption('log-file', null, InputArgument::REQUIRED, 'Log file')
         ;
 
         parent::configure();
     }
 
+    /**
+     * Revert the compressed documents.
+     * If no directory given, it reverts all the compressed files into the configured documents directory.
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->finder->in($this->configuration->getDocsDir())
-            ->name('Original_*')
-            ->files();
+        $dirs = $input->getArgument('dirs');
+        if (count($dirs) <= 0) {
+            $dirs[] = $this->configuration->getDocsDir();
+        }
+        $dirs = $this->makeAbsolute($dirs);
+
+        foreach ($dirs as $dir) {
+            $this->finder->in($dir);
+        }
+
+        $this->finder->name('Original_*')->files();
 
         $foundFiles = $this->finder->count();
 
@@ -95,5 +110,26 @@ Please, see the log file for further information.
         $file->move($revertName);
 
         $this->logger->info("Reverted `{$fileInfo->getPathname()}` into `{$revertName}`.");
+    }
+
+    /**
+     * Make the directorie absolute.
+     * If a directory is not absolute, it's considered relative to configured docuemnts dir.
+     * @param string[] $dirs
+     * @return string[]
+     */
+    private function makeAbsolute(array $dirs): array
+    {
+        return array_map(
+            function (string $elem): string {
+                $path = new Path($elem);
+                if (!$path->isAbsolute()) {
+                    $path = new Path($path->getPathName()->ensureStart("/")->prepend($this->configuration->getDocsDir()));
+                }
+
+                return $path->toString();
+            },
+            $dirs
+        );
     }
 }
