@@ -4,6 +4,13 @@ All notable changes to `cristianoc72/siad-pdf-compressor` project will be docume
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3] - 2025-02-21
+### Added
+Add the possibility to revert only documents in given directories.
+
+### Changed
+Init command now have default values.
+
 ## [1.2.1] - 2025-02-17
 ### Changed
 Fix backup step: make the document backup before all the processes.
