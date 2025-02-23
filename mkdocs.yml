@@ -1,11 +1,11 @@
 site_name: Siad Pdf Compressor
 theme:
   name: material
+  language: it
   highlightjs: true
   palette:
-    primary: 'deep purple'
-    accent: 'deep purple'
-copyright: "Siad Pdf Compressor is licensed under <a href='https://github.com/susina/psr2-code-generator/blob/master/LICENSE'>Apache2 license</a>"
+    primary: 'cyan'
+copyright: "Siad Pdf Compressor application: Copyright 2021-2025 &copy; Cristiano Cinotti <a href='https://github.com/susina/psr2-code-generator/blob/master/LICENSE'>Apache2 license</a></br>Documentation: Copyright 2025 &copy; Cristiano Cinotti <a href='https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1'>CC BY 4.0</a>"
 repo_name: 'cristianc72/siad-pdf-compressor/'
 repo_url: 'https://github.com/cristianoc72/siad-pdf-compressor'
 markdown_extensions:
