@@ -2,8 +2,8 @@
 
 ![Tests](https://github.com/cristianoc72/siad-pdf-compressor/workflows/Tests/badge.svg)
 ![Build](https://github.com/cristianoc72/siad-pdf-compressor/workflows/Build/badge.svg)
-[![Maintainability](https://api.codeclimate.com/v1/badges/aeac6a5195ec9a8099ee/maintainability)](https://codeclimate.com/github/cristianoc72/siad-pdf-compressor/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/aeac6a5195ec9a8099ee/test_coverage)](https://codeclimate.com/github/cristianoc72/siad-pdf-compressor/test_coverage)
+[![Maintainability](https://qlty.sh/badges/5e0463fd-f63c-4810-b69f-19189c9d92b5/maintainability.svg)](https://qlty.sh/gh/cristianoc72/projects/siad-pdf-compressor)
+[![Code Coverage](https://qlty.sh/badges/5e0463fd-f63c-4810-b69f-19189c9d92b5/test_coverage.svg)](https://qlty.sh/gh/cristianoc72/projects/siad-pdf-compressor)
 ![GitHub](https://img.shields.io/github/license/cristianoc72/siad-pdf-compressor)
 
 

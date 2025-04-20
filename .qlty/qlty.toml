@@ -64,9 +64,6 @@ default = true
 name = "actionlint"
 
 [[plugin]]
-name = "checkov"
-
-[[plugin]]
 name = "dotenv-linter"
 mode = "comment"
 

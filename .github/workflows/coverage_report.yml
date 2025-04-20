@@ -22,7 +22,7 @@ jobs:
       - name: Build the code coverage report
         run: composer coverage:clover
       - name: Upload code coverage report
-        uses: qltysh/qlty-action/coverage@main
+        uses: qltysh/qlty-action/coverage@v1
         with:
-          coverage-token: ${{secrets.QLTY_COVERAGE_TOKEN}}
+          token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
           files: clover.xml
