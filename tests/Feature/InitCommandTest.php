@@ -85,7 +85,7 @@ it("throws an exception if the configuration file is not readable", function () 
         'ilovepdf_private_key',
     ]);
     $commandTester->execute([]);
-})->throws(ParseException::class, "File \"vfs://root/siad-pdf-compressor.yaml\" cannot be read.");
+})->throws(ParseException::class, "File \"vfs://root" . DIRECTORY_SEPARATOR . "siad-pdf-compressor.yaml\" cannot be read.");
 
 it("displays an error if the configuration file is not writeable", function () {
     $this->populateWithNotWriteableConfigFile();
@@ -105,5 +105,5 @@ it("displays an error if the configuration file is not writeable", function () {
     $output = $commandTester->getDisplay(true);
 
     expect($commandTester->getStatusCode())->toBe(Command::FAILURE)
-        ->and($output)->toContain('Error! Impossible to write the file `vfs://root/siad-pdf-compressor.yaml`: do you have the correct permissions?');
+        ->and($output)->toContain('Error! Impossible to write the file `vfs://root' . DIRECTORY_SEPARATOR . 'siad-pdf-compressor.yaml`: do you have the correct permissions?');
 });
