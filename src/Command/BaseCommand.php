@@ -11,7 +11,6 @@ namespace cristianoc72\PdfCompressor\Command;
 
 use cristianoc72\PdfCompressor\Configuration;
 use Monolog\Logger;
-use phootwork\lang\Text;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,8 +46,7 @@ class BaseCommand extends Command
 
         foreach ($options as $option) {
             if ($input->hasOption($option) && !empty($input->getOption($option))) {
-                $setter = Text::create($option)->toStudlyCase()->prepend('set')->toString();
-                $this->configuration->$setter($input->getOption($option));
+                $this->configuration->set(str_replace('-', '_', $option), $input->getOption($option));
             }
         }
     }

@@ -51,8 +51,8 @@ class Container extends ContainerBuilder
         /** @var Configuration $config */
         $config = $this->get('configuration');
         $this->register('iLovePdf', Ilovepdf::class)
-            ->addArgument($config->getPublicKey())
-            ->addArgument($config->getPrivateKey())
+            ->addArgument($config->get('public_key'))
+            ->addArgument($config->get('private_key'))
         ;
     }
 
@@ -64,7 +64,7 @@ class Container extends ContainerBuilder
         /** @var Configuration $config */
         $config = $this->get('configuration');
         $this->register('streamHandler', StreamHandler::class)
-            ->addArgument($config->getLogFile())
+            ->addArgument($config->get('log_file'))
         ;
         $this->register('logger', Logger::class)
             ->addArgument('Siad Pdf Compressor')

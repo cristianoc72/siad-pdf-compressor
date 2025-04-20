@@ -10,7 +10,8 @@
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Dotenv\Exception\PathException;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
 it("creates a configuration file", function () {
     $this->populateFilesystem();
@@ -25,7 +26,8 @@ it("creates a configuration file", function () {
         'ilovepdf_public_key',
         'ilovepdf_private_key',
         '/home/pdf-compressor.log',
-        'Y'
+        'Y',
+        "E_1\nE_2\nE_3"
     ]);
 
     $commandTester->execute([]);
@@ -38,16 +40,17 @@ If you want to change it, please run `init` command again.
 
     expect($commandTester->getStatusCode())->toBe(Command::SUCCESS)
         ->and($output)->toContain($expectedOutput)
-        ->and(file_get_contents(vfsStream::url('root/.env')))
-            ->toContain("DOCS_DIR=" . vfsStream::url('root/docs'))
-            ->toContain("PRIVATE_KEY=ilovepdf_private_key")
-            ->toContain("PUBLIC_KEY=ilovepdf_public_key")
-            ->toContain("LOG_FILE=/home/pdf-compressor.log")
-            ->toContain("DISABLE_PREINVOICE=true")
-    ;
+        ->and(Yaml::parseFile(vfsStream::url('root/siad-pdf-compressor.yaml')))->toBe([
+            'public_key' => 'ilovepdf_public_key',
+            'private_key' => 'ilovepdf_private_key',
+            'docs_dir' => vfsStream::url('root/docs'),
+            'log_file' => '/home/pdf-compressor.log',
+            'disable_preinvoice' => true,
+            'excludes' => ['E_1', 'E_2', 'E_3']
+        ]);
 });
 
-it("display an errormessage if the document directory doesn't exist", function () {
+it("display an error message if the document directory doesn't exist", function () {
     $this->populateFilesystem();
     $container = $this->getContainer();
 
@@ -69,7 +72,7 @@ it("display an errormessage if the document directory doesn't exist", function (
 });
 
 it("throws an exception if the configuration file is not readable", function () {
-    $this->populateWithUnreadableEnvFile();
+    $this->populateWithUnreadableConfigFile();
     $container = $this->getContainer();
 
     $app = $container->get('app');
@@ -82,10 +85,10 @@ it("throws an exception if the configuration file is not readable", function () 
         'ilovepdf_private_key',
     ]);
     $commandTester->execute([]);
-})->throws(PathException::class, 'Unable to read the "vfs://root/.env" environment file.');
+})->throws(ParseException::class, "File \"vfs://root/siad-pdf-compressor.yaml\" cannot be read.");
 
 it("displays an error if the configuration file is not writeable", function () {
-    $this->populateWithNotWriteableEnvFile();
+    $this->populateWithNotWriteableConfigFile();
     $container = $this->getContainer();
 
     $app = $container->get('app');
@@ -102,5 +105,5 @@ it("displays an error if the configuration file is not writeable", function () {
     $output = $commandTester->getDisplay(true);
 
     expect($commandTester->getStatusCode())->toBe(Command::FAILURE)
-        ->and($output)->toContain('Error! Impossible to write the file `vfs://root/.env`: do you have the correct permissions?');
+        ->and($output)->toContain('Error! Impossible to write the file `vfs://root/siad-pdf-compressor.yaml`: do you have the correct permissions?');
 });

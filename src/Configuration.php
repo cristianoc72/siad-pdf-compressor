@@ -9,101 +9,70 @@
 
 namespace cristianoc72\PdfCompressor;
 
+use Dflydev\DotAccessData\Data;
 use phootwork\file\exception\FileException;
 use phootwork\file\File;
-use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
-class Configuration
+/**
+ * Class Configuration.
+ * Class to manage the configuration values.
+ */
+class Configuration extends Data
 {
     public const DEFAULT_DIR = "C:\\siad";
 
-    private string $docsDir;
-    private string $publicKey = '';
-    private string $privateKey = '';
-    private string $fileName = '';
-    private string $logFile = '';
-    private bool $disablePreInvoice = false;
-
+    /**
+     * @param ?string $path The path where to find the configuration file
+     * @throws ParseException If errors occur while parsing the configuration file.
+     */
     public function __construct(?string $path = null)
     {
-        $path = $path ?? ($_SERVER['HOME'] ?? self::DEFAULT_DIR);
-        $this->fileName = "$path/.env";
-
-        $dotEnv = new Dotenv();
-        $dotEnv->load($this->fileName);
-
-        $this->docsDir = $_ENV['DOCS_DIR'];
-        $this->privateKey = $_ENV['PRIVATE_KEY'];
-        $this->publicKey = $_ENV['PUBLIC_KEY'];
-        $this->logFile = $_ENV['LOG_FILE'];
-        $this->disablePreInvoice = $_ENV['DISABLE_PREINVOICE'] === 'true' ? true : false;
-    }
-
-    public function getDocsDir(): string
-    {
-        return $this->docsDir;
-    }
-
-    public function setDocsDir(string $docsDir): void
-    {
-        $this->docsDir = $docsDir;
-    }
-
-    public function getPublicKey(): string
-    {
-        return $this->publicKey;
-    }
-
-    public function setPublicKey(string $publicKey): void
-    {
-        $this->publicKey = $publicKey;
-    }
-
-    public function getPrivateKey(): string
-    {
-        return $this->privateKey;
-    }
-
-    public function setPrivateKey(string $privateKey): void
-    {
-        $this->privateKey = $privateKey;
-    }
-
-    public function getLogFile(): string
-    {
-        return $this->logFile;
-    }
-
-    public function setLogFile(string $logFile): void
-    {
-        $this->logFile = $logFile;
-    }
-
-    public function isDisablePreInvoice(): bool
-    {
-        return $this->disablePreInvoice;
-    }
-
-    public function setDisablePreInvoice(bool $value): void
-    {
-        $this->disablePreInvoice = $value;
+        $fileName = $this->getConfigFileName($path);
+        $configArray = Yaml::parseFile($fileName);
+        parent::__construct($configArray);
+        $this->set('file_name', $fileName);
     }
 
     /**
-     * @throws FileException If something went wrong in reading template and writing `.env` file
+     * Build and save the configuration file.
+     *
+     * @throws FileException If something went wrong in writing configuration file.
      */
     public function saveConfiguration(): void
     {
-        $tplFile = new File(__DIR__ . '/../resources/templates/.env.mustache');
-        $content = $tplFile->read()
-            ->replace(
-                ['{{ docsDir }}', '{{ privateKey }}', '{{ publicKey }}', '{{ logFile }}', '{{ disablePreInvoice }}'],
-                [$this->docsDir, $this->privateKey, $this->publicKey, $this->logFile, $this->disablePreInvoice ? 'true' : 'false']
-            );
-        $file = new File($this->fileName);
+        $file = new File($this->get('file_name'));
         if (!$file->isWritable()) {
-            throw new FileException("Impossible to write the file `{$this->fileName}`: do you have the correct permissions?");
+            throw new FileException("Impossible to write the file `{$this->get('file_name')}`: do you have the correct permissions?");
         }
-        $file->write($content);
+
+        $array = $this->export();
+        unset($array['file_name']);
+        $file->write(Yaml::dump($array));
+    }
+
+    /**
+     * Return the configuration file name.
+     *
+     * @throws FileException If more then one configuration file is found.
+     */
+    private function getConfigFileName(?string $path = null): string
+    {
+        $path = $path ?? ($_SERVER['HOME'] ?? self::DEFAULT_DIR);
+        $finder = new Finder();
+        $finder->in($path)->name('siad-pdf-compressor.yaml')->name('siad-pdf-compressor.yml')->files();
+
+        if ($finder->count() !== 1) {
+            throw new FileException("There must be one configuration file: {$finder->count()} found.");
+        }
+
+        $fileName = '';
+        foreach ($finder as $file) {
+            $fileName = $file->getPathname();
+        }
+
+        return $fileName;
     }
 }

@@ -46,7 +46,7 @@ class InitCommand extends Command
 
         $output->writeln(
             "
-<info>Initialize the application and save the configuration on an editable `.env` file</info>
+<info>Initialize the application and save the configuration on an editable `siad-pdf-compressor.yaml` file</info>
 "
         );
 
@@ -55,6 +55,7 @@ class InitCommand extends Command
         $this->populatePrivateKey($input, $output);
         $this->populateLogFile($input, $output);
         $this->populatePreInvoice($input, $output);
+        $this->populateExcludes($input, $output);
 
         try {
             $this->configuration->saveConfiguration();
@@ -75,10 +76,10 @@ class InitCommand extends Command
             $docDirQuestion = new Question(
                 'Please enter the name of the directory containing the documents to compress',
                 'C:\\siad',
-                $this->configuration->getDocsDir()
+                $this->configuration->get('docs_dir')
             );
-            $this->configuration->setDocsDir((string) $this->helper?->ask($input, $output, $docDirQuestion));
-            $dir = new Directory($this->configuration->getDocsDir());
+            $this->configuration->set('docs_dir', (string) $this->helper?->ask($input, $output, $docDirQuestion));
+            $dir = new Directory($this->configuration->get('docs_dir'));
             if (!$dir->exists()) {
                 $output->writeln("<error>Error! The document directory does not exists.</error>");
             }
@@ -89,32 +90,48 @@ class InitCommand extends Command
     {
         $publicKeyQuestion = new Question(
             'Please enter the iLovePdf public key (you can leave this blank and manually insert it when running `compress` command)',
-            $this->configuration->getPublicKey()
+            $this->configuration->get('public_key')
         );
-        $this->configuration->setPublicKey((string) $this->helper?->ask($input, $output, $publicKeyQuestion));
+        $this->configuration->set('public_key', (string) $this->helper?->ask($input, $output, $publicKeyQuestion));
     }
 
     private function populatePrivateKey(InputInterface $input, OutputInterface $output): void
     {
         $privateKeyQuestion = new Question(
             'Please enter the iLovePdf private key (you can leave this blank and manually insert it when running `compress` command)',
-            $this->configuration->getPrivateKey()
+            $this->configuration->get('private_key')
         );
-        $this->configuration->setPrivateKey((string) $this->helper?->ask($input, $output, $privateKeyQuestion));
+        $this->configuration->set('private_key', (string) $this->helper?->ask($input, $output, $privateKeyQuestion));
     }
 
     private function populateLogFile(InputInterface $input, OutputInterface $output): void
     {
         $logFileQuestion = new Question(
             'Please enter the path for your log file',
-            $this->configuration->getDocsDir() . '/pdf-compressor.log'
+            $this->configuration->get('docs_dir') . '/pdf-compressor.log'
         );
-        $this->configuration->setLogFile((string) $this->helper?->ask($input, $output, $logFileQuestion));
+        $this->configuration->set('log_file', (string) $this->helper?->ask($input, $output, $logFileQuestion));
     }
 
     private function populatePreInvoice(InputInterface $input, OutputInterface $output): void
     {
         $preInvoiceQuestion = new ConfirmationQuestion('Do you want to disable the creation of the copies of the files, to use in pre-invoices?', false, '/^(y|s)/i');
-        $this->configuration->setDisablePreInvoice((bool) $this->helper?->ask($input, $output, $preInvoiceQuestion));
+        $this->configuration->set('disable_preinvoice', (bool) $this->helper?->ask($input, $output, $preInvoiceQuestion));
+    }
+
+    private function populateExcludes(InputInterface $input, OutputInterface $output): void
+    {
+        $default = $this->configuration->has('excludes') ? implode("\n", $this->configuration->get('excludes')) : null;
+        $question = new Question("Please enter some directories you want to exclude from documentation searching
+(subdirectories of {$this->configuration->get('docs_dir')}).
+Write each directory and press enter.
+Digit Ctrl-Z to end (Ctrl-D on Linux or Mac).
+",
+            $default
+        );
+        $question->setMultiline(true);
+        $question->setNormalizer(fn(string $value): array => explode("\n", $value));
+
+        $this->configuration->set('excludes', $this->helper?->ask($input, $output, $question));
     }
 }

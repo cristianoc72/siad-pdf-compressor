@@ -10,14 +10,15 @@
         }
     ],
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "symfony/finder": "^7",
-        "symfony/dotenv": "^7",
         "symfony/console": "^7",
         "symfony/dependency-injection": "^7",
         "phootwork/file": "^3.0",
         "monolog/monolog": "^3.6",
-        "ilovepdf/ilovepdf-php": "^1.2"
+        "ilovepdf/ilovepdf-php": "^1.2",
+        "symfony/yaml": "^7.2",
+        "dflydev/dot-access-data": "^3.0"
     },
     "autoload": {
         "psr-4": {

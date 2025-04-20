@@ -29,14 +29,14 @@ Your log file path is: vfs://root/pdf-compressor.log
 
     expect($commandTester->getStatusCode())->toBe(Command::SUCCESS)
         ->and($output)->toContain($expectedOutput)
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
 
-    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->root->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not()->toBeFile()
-            ->and(filesize("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF"))->toBe(307200)
+        expect("{$this->root->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and("{$this->root->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not()->toBeFile()
+            ->and(filesize("{$this->root->url()}/docs/2024/PraticaCollaudata_$i.PDF"))->toBe(307200)
             ->and($logContent)->toContain("INFO: Reverted `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF` into `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF`")
         ;
     }
@@ -61,23 +61,23 @@ Your log file path is: vfs://root/pdf-compressor.log
 
     expect($commandTester->getStatusCode())->toBe(Command::SUCCESS)
         ->and($output)->toContain($expectedOutput)
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
 
-    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->root->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 3; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024/E_given/PraticaCollaudata_$i.PDF")->toBeFile()
-            ->and(filesize("{$this->getRoot()->url()}/docs/2024/E_given/PraticaCollaudata_$i.PDF"))->toBe(307200)
-            ->and("{$this->getRoot()->url()}/docs/2024/E_given/Original_pratica_collaudata_$i.PDF")->not()->toBeFile()
+        expect("{$this->root->url()}/docs/2024/E_given/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and(filesize("{$this->root->url()}/docs/2024/E_given/PraticaCollaudata_$i.PDF"))->toBe(307200)
+            ->and("{$this->root->url()}/docs/2024/E_given/Original_pratica_collaudata_$i.PDF")->not()->toBeFile()
             ->and($logContent)->toContain("INFO: Reverted `vfs://root/docs/2024/E_given" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF` into `vfs://root/docs/2024/E_given" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF`")
         ;
     }
 
     for ($i = 3; $i < 6; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024/E_notgiven/Original_pratica_collaudata_$i.PDF")->toBeFile()
-            ->and(filesize("{$this->getRoot()->url()}/docs/2024/E_notgiven/Original_pratica_collaudata_$i.PDF"))->toBe(307200)
-            ->and("{$this->getRoot()->url()}/docs/2024/E_notgiven/PraticaCollaudata_$i.PDF")->toBeFile()
-            ->and(file_get_contents("{$this->getRoot()->url()}/docs/2024/E_notgiven/PraticaCollaudata_$i.PDF"))
+        expect("{$this->root->url()}/docs/2024/E_notgiven/Original_pratica_collaudata_$i.PDF")->toBeFile()
+            ->and(filesize("{$this->root->url()}/docs/2024/E_notgiven/Original_pratica_collaudata_$i.PDF"))->toBe(307200)
+            ->and("{$this->root->url()}/docs/2024/E_notgiven/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and(file_get_contents("{$this->root->url()}/docs/2024/E_notgiven/PraticaCollaudata_$i.PDF"))
                 ->toBe("Compressed PraticaCollaudata_$i.PDF")
         ;
     }
@@ -95,7 +95,7 @@ it("reverts uncompressed files", function () {
 
     expect($commandTester->getStatusCode())->toBe(Command::SUCCESS)
         ->and($output)->toContain('0 original documents successfully restored.')
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->not->toBeFile()
+        ->and("{$this->root->url()}/pdf-compressor.log")->not->toBeFile()
     ;
 });
 
@@ -112,13 +112,13 @@ it("reverts not writeable files", function () {
 
     expect($commandTester->getStatusCode())->toBe(Command::FAILURE)
         ->and($output)->toContain('Restore original documents executed with errors!')
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
 
-    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->root->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
+        expect("{$this->root->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->toBeFile()
+            ->and("{$this->root->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
             ->and($logContent)->toContain(
                 "ERROR: phootwork\\file\\exception\\FileException: Failed to move vfs://root/docs/2024" .
             DIRECTORY_SEPARATOR .

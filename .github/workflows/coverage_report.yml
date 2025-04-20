@@ -12,16 +12,17 @@ jobs:
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3
+          php-version: 8.4
           extensions: json
           coverage: pcov
       - name: Install composer dependencies
         uses: ramsey/composer-install@v3
         with:
           composer-options: "--prefer-dist --optimize-autoloader"
-      - name: CodeClimate coverage report
-        uses: paambaati/codeclimate-action@v9.0.0
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      - name: Build the code coverage report
+        run: composer coverage:clover
+      - name: Upload code coverage report
+        uses: qltysh/qlty-action/coverage@main
         with:
-          coverageCommand: "composer coverage:clover"
+          coverage-token: ${{secrets.QLTY_COVERAGE_TOKEN}}
+          files: clover.xml

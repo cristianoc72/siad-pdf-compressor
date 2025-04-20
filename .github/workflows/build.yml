@@ -12,14 +12,14 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3
+          php-version: 8.4
           ini-values: phar.readonly=0
           tools: composer
           coverage: none
       - name: Install Composer dependencies
         uses: ramsey/composer-install@v3
       - name: Download Box
-        run: wget https://github.com/box-project/box/releases/download/4.6.1/box.phar
+        run: wget https://github.com/box-project/box/releases/download/4.6.6/box.phar
       - name: Build PHAR
         run: php box.phar compile
       - name: Upload box.phar

@@ -32,7 +32,7 @@ trait Container
                 ['merge', $taskMergeStub],
                 ['compress', $taskCompressStub]
             ]);
-            $root = $this->getRoot();
+            $root = $this->root;
             $this->testContainer = new BaseContainer($root->url());
             $this->testContainer->set('iLovePdf', $iLovePdfStub);
         }

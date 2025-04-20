@@ -29,13 +29,13 @@ it("prepares the setter methods", function () {
 
     expect($output)->toContain('Symfony\Component\Finder\Exception\DirectoryNotFoundException
 The "vfs://root/my/awesome/dir" directory does not exist.
-')->and("{$this->getRoot()->url()}/pdf-compressor.log")->not->toBeFile();
+')->and("{$this->root->url()}/pdf-compressor.log")->not->toBeFile();
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/2024/Original_PraticaCollaudata_$i.PDF")->not->toBeFile();
+        expect("{$this->root->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and("{$this->root->url()}/docs/2024/Original_PraticaCollaudata_$i.PDF")->not->toBeFile();
     }
 
-    expect($container->get('configuration')->getPublicKey())->toBe('my_public_key')
-        ->and($container->get('configuration')->getPrivateKey())->toBe('my_private_key');
+    expect($container->get('configuration')->get('public_key'))->toBe('my_public_key')
+        ->and($container->get('configuration')->get('private_key'))->toBe('my_private_key');
 });

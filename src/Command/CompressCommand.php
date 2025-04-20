@@ -94,7 +94,7 @@ Please, see the log file or the displayed messages for further information.
 Please, see the log file for further information.
 </info>";
             $output->writeln($message);
-            $output->writeln("Your log file path is: {$this->configuration->getLogFile()}");
+            $output->writeln("Your log file path is: {$this->configuration->get('log_file')}");
         } catch (Exception $e) {
             $output->writeln('<error>' . get_class($e) . '</error>');
             $output->writeln("<error>{$e->getMessage()}</error>");
@@ -107,7 +107,7 @@ Please, see the log file for further information.
 
     private function getPreviousDocsDir(): string
     {
-        $dir = $this->configuration->getDocsDir();
+        $dir = $this->configuration->get('docs_dir');
         $year = substr($dir, -4);
         $prevDir = str_replace($year, (string) ((int) $year - 1), $dir);
 
@@ -116,7 +116,12 @@ Please, see the log file for further information.
 
     private function getFiles(): void
     {
-        $this->finder->in($this->configuration->getDocsDir());
+        $this->finder->in($this->configuration->get('docs_dir'));
+        
+        if ($this->configuration->has('excludes')) {
+            $this->finder->notPath($this->configuration->get('excludes'));
+        }
+
         if ('' !== $previousDir = $this->getPreviousDocsDir()) {
             $this->finder->in($previousDir);
         }
@@ -204,7 +209,7 @@ Please, see the log file for further information.
 
     private function addPreInvoiceFile(File $file): void
     {
-        if (!$this->configuration->isDisablePreInvoice()) {
+        if (!$this->configuration->get('disable_preinvoice')) {
             $dir = $file->getDirname();
             $destinationFile = new File(
                 $dir->ensureEnd(DIRECTORY_SEPARATOR)

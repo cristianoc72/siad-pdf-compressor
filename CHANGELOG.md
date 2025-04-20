@@ -4,6 +4,15 @@ All notable changes to `cristianoc72/siad-pdf-compressor` project will be docume
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0] - unrealased
+### Added
+Add `excludes` options, to exclude some sub-directories from the document search path.
+
+### Changed
+- Move the configuration file format to YAML, via `symfony/yaml` component.
+- Bump the minum PHP version to 8.4
+- Move the quality checkerfrom [Codeclimate(https://codeclimate.com/)] to [Qlty](https://qlty.sh/).
+
 ## [1.3] - 2025-02-21
 ### Added
 Add the possibility to revert only documents in given directories.

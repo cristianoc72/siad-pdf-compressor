@@ -20,7 +20,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -49,7 +48,7 @@ class RevertCommand extends BaseCommand
     {
         $dirs = $input->getArgument('dirs');
         if (count($dirs) <= 0) {
-            $dirs[] = $this->configuration->getDocsDir();
+            $dirs[] = $this->configuration->get('docs_dir');
         }
         $dirs = $this->makeAbsolute($dirs);
 
@@ -87,7 +86,7 @@ Please, see the log file or the displayed messages for further information.
 Please, see the log file for further information.
 </info>";
         $output->writeln($message);
-        $output->writeln("Your log file path is: {$this->configuration->getLogFile()}");
+        $output->writeln("Your log file path is: {$this->configuration->get('log_file')}");
 
         return $this->errors ? Command::FAILURE : Command::SUCCESS;
     }
@@ -115,6 +114,7 @@ Please, see the log file for further information.
     /**
      * Make the directorie absolute.
      * If a directory is not absolute, it's considered relative to configured docuemnts dir.
+     *
      * @param string[] $dirs
      * @return string[]
      */
@@ -124,7 +124,7 @@ Please, see the log file for further information.
             function (string $elem): string {
                 $path = new Path($elem);
                 if (!$path->isAbsolute()) {
-                    $path = new Path($path->getPathName()->ensureStart("/")->prepend($this->configuration->getDocsDir()));
+                    $path = new Path($path->getPathName()->ensureStart("/")->prepend($this->configuration->get('docs_dir')));
                 }
 
                 return $path->toString();

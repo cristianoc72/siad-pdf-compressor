@@ -10,9 +10,10 @@
 namespace cristianoc72\PdfCompressor\Tests\Command;
 
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\visitor\vfsStreamPrintVisitor;
+use phootwork\file\exception\FileException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Dotenv\Exception\PathException;
 
 it("compresses the PDF files", function () {
     $this->populateFilesystem();
@@ -35,12 +36,12 @@ Your log file path is: vfs://root/pdf-compressor.log
     $output = $commandTester->getDisplay(true);
     expect($output)->toContain($expectedOutput)
         ->and($commandTester->getStatusCode())->toBe(Command::SUCCESS)
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
 
-    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->root->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
+        expect("{$this->root->url()}/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
             ->and($logContent)->toContain("INFO: Backup `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` into `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF`.")
                 ->toContain(
                     "INFO: `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed."
@@ -69,11 +70,11 @@ Your log file path is: vfs://root/pdf-compressor.log
     $output = $commandTester->getDisplay(true);
     expect($output)->toContain($expectedOutput)
         ->and($commandTester->getStatusCode())->toBe(Command::SUCCESS)
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024" . DIRECTORY_SEPARATOR . "E_$i" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/2024/E_$i" . DIRECTORY_SEPARATOR . "E_$i.PDF")->toBeFile();
+        expect("{$this->root->url()}/docs/2024" . DIRECTORY_SEPARATOR . "E_$i" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
+            ->and("{$this->root->url()}/docs/2024/E_$i" . DIRECTORY_SEPARATOR . "E_$i.PDF")->toBeFile();
     }
 });
 
@@ -98,13 +99,13 @@ Your log file path is: vfs://root/pdf-compressor.log
 ";
     $output = $commandTester->getDisplay(true);
     expect($output)->toContain($expectedOutput)
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
 
-    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->root->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 4; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
+        expect("{$this->root->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->toBeFile()
+            ->and("{$this->root->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
             ->and($logContent)->toContain("INFO: `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed.");
     }
 
@@ -134,13 +135,13 @@ Your log file path is: vfs://root/pdf-compressor.log
 
     expect($commandTester->getStatusCode())->toBe(Command::FAILURE)
         ->and($output)->toContain($expectedOutput)
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
 
-    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->root->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile();
+        expect("{$this->root->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not->toBeFile()
+            ->and("{$this->root->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile();
     }
 
     expect($logContent)->toContain("ERROR: Ilovepdf\Exceptions\AuthException: Invalid credentials");
@@ -167,13 +168,13 @@ Your log file path is: vfs://root/pdf-compressor.log
 
     expect($commandTester->getStatusCode())->toBe(Command::FAILURE)
         ->and($output)->toContain($expectedOutput)
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
 
-    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->root->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
+        expect("{$this->root->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not->toBeFile()
+            ->and("{$this->root->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
             ->and($logContent)->toContain("INFO: Remove backup file `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF");
     }
 
@@ -201,13 +202,13 @@ Your log file path is: vfs://root/pdf-compressor.log
 
     expect($commandTester->getStatusCode())->toBe(Command::FAILURE)
         ->and($output)->toContain($expectedOutput)
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
 
-    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->root->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not->toBeFile()
-            ->and("{$this->getRoot()->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
+        expect("{$this->root->url()}/docs/2024/Original_pratica_collaudata_$i.PDF")->not->toBeFile()
+            ->and("{$this->root->url()}/docs/2024/PraticaCollaudata_$i.PDF")->toBeFile()
             ->and($logContent)->toContain("INFO: Remove backup file `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF");
     }
 
@@ -215,9 +216,9 @@ Your log file path is: vfs://root/pdf-compressor.log
 });
 
 it("can't find the configuration file", function () {
-    $this->getRoot()->removeChild('.env');
+    $this->root->removeChild('siad-pdf-compressor.yaml');
     $container = $this->getContainer();
-})->throws(PathException::class, 'Unable to read the "vfs://root/.env" environment file.');
+})->throws(FileException::class, "There must be one configuration file: 0 found.");
 
 it("searches files also in previous year folder", function () {
     $this->populateWithPreviousYear();
@@ -240,12 +241,12 @@ Your log file path is: vfs://root/pdf-compressor.log
     $output = $commandTester->getDisplay(true);
     expect($output)->toContain($expectedOutput)
         ->and($commandTester->getStatusCode())->toBe(Command::SUCCESS)
-        ->and("{$this->getRoot()->url()}/pdf-compressor.log")->toBeFile();
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
 
-    $logContent = file_get_contents("{$this->getRoot()->url()}/pdf-compressor.log");
+    $logContent = file_get_contents("{$this->root->url()}/pdf-compressor.log");
 
     for ($i = 0; $i < 5; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
+        expect("{$this->root->url()}/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
             ->and($logContent)->toContain("INFO: Backup `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` into `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF`.")
                 ->toContain(
                     "INFO: `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed."
@@ -253,10 +254,53 @@ Your log file path is: vfs://root/pdf-compressor.log
     }
 
     for ($i = 5; $i < 10; $i++) {
-        expect("{$this->getRoot()->url()}/docs/2023" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
+        expect("{$this->root->url()}/docs/2023" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
             ->and($logContent)->toContain("INFO: Backup `vfs://root/docs/2023" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` into `vfs://root/docs/2023" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF`.")
                 ->toContain(
                     "INFO: `vfs://root/docs/2023" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed."
+                );
+    }
+});
+
+it("excludes a directory from searching path", function () {
+    $this->populateWithExcludes();
+    $container = $this->getContainer();
+
+    $app = $container->get('app');
+    $command = $app->find('compress');
+    $commandTester = new CommandTester($command);
+    $commandTester->execute([
+        '--log-file' => vfsStream::url('root/pdf-compressor.log')
+    ]);
+
+    // test output
+    $expectedOutput = "
+Compression successfully executed!
+Please, see the log file for further information.
+
+Your log file path is: vfs://root/pdf-compressor.log
+";
+    $output = $commandTester->getDisplay(true);
+    expect($output)->toContain($expectedOutput)
+        ->and($commandTester->getStatusCode())->toBe(Command::SUCCESS)
+        ->and("{$this->root->url()}/pdf-compressor.log")->toBeFile();
+
+    $logContent = file_get_contents("{$this->root->url()}/pdf-compressor.log");
+
+    for ($i = 0; $i < 5; $i++) {
+        expect("{$this->root->url()}/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->toBeFile()
+            ->and($logContent)->toContain("INFO: Backup `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` into `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF`.")
+                ->toContain(
+                    "INFO: `vfs://root/docs/2024" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed."
+                );
+    }
+
+    for ($i = 5; $i < 10; $i++) {
+        expect("{$this->root->url()}/docs/2024/excluded" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF")->not()->toBeFile()
+            ->and("{$this->root->url()}/docs/2024/excluded" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF")->toBeFile()
+            ->and($logContent)->not()->toContain("INFO: Backup `vfs://root/docs/202a/excluded" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` into `vfs://root/docs/2024/excluded" . DIRECTORY_SEPARATOR . "Original_pratica_collaudata_$i.PDF`.")
+                ->not()->toContain(
+                    "INFO: `vfs://root/docs/2024/excluded" . DIRECTORY_SEPARATOR . "PraticaCollaudata_$i.PDF` compressed."
                 );
     }
 });

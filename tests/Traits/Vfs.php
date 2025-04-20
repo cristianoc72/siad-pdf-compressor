@@ -16,39 +16,35 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
 use org\bovigo\vfs\visitor\vfsStreamPrintVisitor;
-use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
+use Symfony\Component\Yaml\Yaml;
 
 trait Vfs
 {
-    private vfsStreamDirectory $root;
-
-    /**
-     * Set up and return the virtual filesystem
-     */
-    public function getRoot(): vfsStreamDirectory
-    {
-        return $this->root ?? $this->root = vfsStream::setup();
+    public private(set) vfsStreamDirectory $root {
+        get => $this->root ?? $this->root = vfsStream::setup();
     }
+
+    private array $configContent = [
+        'public_key' => 'public_key',
+        'private_key' => 'private_key',
+        'docs_dir' => 'vfs://root/docs/2024',
+        'log_file' => 'vfs://root/pdf-compressor.log',
+        'disable_preinvoice' => true
+    ];
 
     // Several populator methods
 
-    public function createDotEnv(): vfsStreamFile
+    public function createConfigFile(): vfsStreamFile
     {
-        return vfsStream::newFile('.env')->at($this->getRoot())->setContent(
-            "
-PUBLIC_KEY=public_key
-PRIVATE_KEY=private_key
-DOCS_DIR=" . vfsStream::url('root/docs/2024') . "
-LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log
-DISABLE_PREINVOICE=true
-"
-        );
+        return vfsStream::newFile('siad-pdf-compressor.yaml')
+            ->at($this->root)
+            ->setContent(Yaml::dump($this->configContent));
     }
 
     protected function populateFilesystem(): void
     {
-        $this->createDotEnv();
-        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $this->createConfigFile();
+        $docsDir = vfsStream::newDirectory('docs')->at($this->root);
         $dir = vfsStream::newDirectory('2024')->at($docsDir);
 
         for ($i = 0; $i < 5; $i++) {
@@ -63,17 +59,13 @@ DISABLE_PREINVOICE=true
 
     protected function populateForPreInvoice(): void
     {
-        $envFile = vfsStream::newFile('.env')->at($this->getRoot())->setContent(
-            "
-PUBLIC_KEY=public_key
-PRIVATE_KEY=private_key
-DOCS_DIR=" . vfsStream::url('root/docs/2024') . "
-LOG_FILE=" . vfsStream::url('root') . "/pdf-compressor.log
-DISABLE_PREINVOICE=false
-"
-        );
+        $content = $this->configContent;
+        $content['disable_preinvoice'] = false;
 
-        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        vfsStream::newFile('siad-pdf-compressor.yaml')
+            ->at($this->root)
+            ->setContent(Yaml::dump($content));
+        $docsDir = vfsStream::newDirectory('docs')->at($this->root);
         $dir = vfsStream::newDirectory('2024')->at($docsDir);
 
         for ($i = 0; $i < 5; $i++) {
@@ -86,9 +78,9 @@ DISABLE_PREINVOICE=false
 
     protected function populateWithOneNotReadableFile(): void
     {
-        $dir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('docs')->at($this->root);
         $docsDir = vfsStream::newDirectory('2024')->at($dir);
-        $this->createDotEnv();
+        $this->createConfigFile();
 
         for ($i = 0; $i < 4; $i++) {
             $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
@@ -101,11 +93,11 @@ DISABLE_PREINVOICE=false
         ;
     }
 
-    protected function populateWithUnreadableEnvFile(): void
+    protected function populateWithUnreadableConfigFile(): void
     {
-        $dir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('docs')->at($this->root);
         $docsDir = vfsStream::newDirectory('2024')->at($dir);
-        $dotEnv = $this->createDotEnv();
+        $dotEnv = $this->createConfigFile();
         $dotEnv->chmod(000);
 
         for ($i = 0; $i < 5; $i++) {
@@ -115,11 +107,11 @@ DISABLE_PREINVOICE=false
         }
     }
 
-    protected function populateWithNotWriteableEnvFile(): void
+    protected function populateWithNotWriteableConfigFile(): void
     {
-        $dir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('docs')->at($this->root);
         $docsDir = vfsStream::newDirectory('2024')->at($dir);
-        $dotEnv = $this->createDotEnv();
+        $dotEnv = $this->createConfigFile();
         $dotEnv->chmod(0400);
 
         for ($i = 0; $i < 5; $i++) {
@@ -131,9 +123,9 @@ DISABLE_PREINVOICE=false
 
     protected function populateFilesToRestore(): void
     {
-        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $docsDir = vfsStream::newDirectory('docs')->at($this->root);
         $dir = vfsStream::newDirectory('2024')->at($docsDir);
-        $this->createDotEnv();
+        $this->createConfigFile();
 
         for ($i = 0; $i < 5; $i++) {
             vfsStream::newFile("Original_pratica_collaudata_$i.PDF")
@@ -147,11 +139,11 @@ DISABLE_PREINVOICE=false
 
     protected function populateFilesToRestoreInDifferentDirs(): void
     {
-        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $docsDir = vfsStream::newDirectory('docs')->at($this->root);
         $dir = vfsStream::newDirectory('2024')->at($docsDir);
         $givenDir = vfsStream::newDirectory('E_given')->at($dir);
         $notGivenDir = vfsStream::newDirectory('E_notgiven')->at($dir);
-        $this->createDotEnv();
+        $this->createConfigFile();
 
         for ($i = 0; $i < 3; $i++) {
             vfsStream::newFile("Original_pratica_collaudata_$i.PDF")
@@ -174,9 +166,9 @@ DISABLE_PREINVOICE=false
 
     protected function populateNotWriteableFilesToRestore(): void
     {
-        $dir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $dir = vfsStream::newDirectory('docs')->at($this->root);
         $docsDir = vfsStream::newDirectory('2024')->at($dir);
-        $this->createDotEnv();
+        $this->createConfigFile();
 
         for ($i = 0; $i < 5; $i++) {
             vfsStream::newFile("Original_pratica_collaudata_$i.PDF")
@@ -195,10 +187,41 @@ DISABLE_PREINVOICE=false
 
     protected function populateWithPreviousYear(): void
     {
-        $this->createDotEnv();
-        $docsDir = vfsStream::newDirectory('docs')->at($this->getRoot());
+        $this->createConfigFile();
+        $docsDir = vfsStream::newDirectory('docs')->at($this->root);
         $dir1 = vfsStream::newDirectory('2024')->at($docsDir);
         $dir2 = vfsStream::newDirectory('2023')->at($docsDir);
+
+        for ($i = 0; $i < 5; $i++) {
+            $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
+                ->at($dir1)->withContent(LargeFileContent::withKilobytes(300))
+            ;
+        }
+
+        for ($i = 5; $i < 10; $i++) {
+            $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
+                ->at($dir2)->withContent(LargeFileContent::withKilobytes(300))
+            ;
+        }
+    }
+
+    protected function populateWithExcludes(): void
+    {
+        $content = [
+            'public_key' => 'public_key',
+            'private_key' => 'private_key',
+            'docs_dir' => 'vfs://root/docs/2024',
+            'log_file' => 'vfs://root/pdf-compressor.log',
+            'disable_preinvoice' => true,
+            'excludes' => ['excluded']
+        ];
+        vfsStream::newFile('siad-pdf-compressor.yaml')
+            ->at($this->root)
+            ->setContent(Yaml::dump($content));
+        
+        $docsDir = vfsStream::newDirectory('docs')->at($this->root);
+        $dir1 = vfsStream::newDirectory('2024')->at($docsDir);
+        $dir2 = vfsStream::newDirectory('excluded')->at($dir1);
 
         for ($i = 0; $i < 5; $i++) {
             $doc = vfsStream::newFile("PraticaCollaudata_$i.PDF")
