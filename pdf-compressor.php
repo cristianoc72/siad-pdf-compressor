@@ -10,7 +10,7 @@
 use cristianoc72\PdfCompressor\Container;
 use phootwork\file\File;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Dotenv\Exception\PathException;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 require 'vendor/autoload.php';
 
@@ -19,7 +19,7 @@ try {
     /** @var Application $application */
     $application = $container->get('app');
     $application->run();
-} catch (PathException $e) {
+} catch (ParseException $e) {
     echo "
 Configuration file not found!
 Please run `init` command to initialize the application:
@@ -27,12 +27,12 @@ Please run `init` command to initialize the application:
     php pdf-compressor.phar init
 
 ";
-    $file = new File($_SERVER['HOME'] . '/.env');
+    $file = new File($_SERVER['HOME'] . '/siad-pdf-compressor.yaml');
     $file->write("
-DOCS_DIR=''
-PRIVATE_KEY=''
-PUBLIC_KEY=''
-LOG_FILE=''
+docs_dir: ~
+private_key: ~
+public_key: ~
+log_file: ~
 ");
 } catch (Exception $e) {
     echo "ERROR: " . get_class($e) . " {$e->getMessage()}\n";

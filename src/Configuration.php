@@ -62,7 +62,7 @@ class Configuration extends Data
     {
         $path = $path ?? ($_SERVER['HOME'] ?? self::DEFAULT_DIR);
         $finder = new Finder();
-        $finder->in($path)->name('siad-pdf-compressor.yaml')->name('siad-pdf-compressor.yml')->files();
+        $finder->in($path)->name('siad-pdf-compressor.yaml')->name('siad-pdf-compressor.yml')->depth('==0')->files();
 
         if ($finder->count() !== 1) {
             throw new FileException("There must be one configuration file: {$finder->count()} found.");

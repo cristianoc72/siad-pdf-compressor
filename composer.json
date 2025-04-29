@@ -15,7 +15,7 @@
     "symfony/console": "^7",
     "symfony/dependency-injection": "^7",
     "phootwork/file": "^3.0",
-    "monolog/monolog": "^3.6",
+    "monolog/monolog": "^3",
     "ilovepdf/ilovepdf-php": "^1.2",
     "symfony/yaml": "^7.2",
     "dflydev/dot-access-data": "^3.0"

@@ -35,7 +35,7 @@ class InitCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription("Initialize the application and save the options in a `.env` file")
+            ->setDescription("Initialize the application and save the options in `siad-pdf-compressor.yaml` file")
         ;
     }
 
